@@ -1,6 +1,6 @@
 #ignore debug path
-/build-BattleSea-Desktop_Qt_5_4_2_MinGW_32bit-Debug
-/build-BattleSea-Desktop_Qt_5_4_2_MinGW_32bit-Release
+/build-toAdmin-Desktop_Qt_5_4_2_MinGW_32bit-Debug
+/build-toAdmin-Desktop_Qt_5_4_2_MinGW_32bit-Release
 #ignore /toAdmin/*.user, *.autosave
 /toAdmin/*.user
 /toAdmin/*.autosave
