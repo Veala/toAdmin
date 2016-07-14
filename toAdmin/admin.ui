@@ -29,8 +29,35 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Пользователи</string>
+    </property>
+    <addaction name="addUserAction"/>
+    <addaction name="accessRightsAction"/>
+    <addaction name="delUserAction"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="addUserAction">
+   <property name="text">
+    <string>Добавить пользователя</string>
+   </property>
+  </action>
+  <action name="delUserAction">
+   <property name="text">
+    <string>Удалить пользователя</string>
+   </property>
+   <property name="toolTip">
+    <string>Удалить выбранного пользователя</string>
+   </property>
+  </action>
+  <action name="accessRightsAction">
+   <property name="text">
+    <string>Редактировать права пользователя</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -19,6 +19,13 @@ public:
 
     QSqlDatabase users;
     QSqlTableModel *tusers;
+    //QSqlQueryModel *tusers;
+
+public slots:
+    void sorting(int,Qt::SortOrder);
+    void addUser();
+    void delUser();
+    void accessRights();
 
 private:
     Ui::Admin *ui;
