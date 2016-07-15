@@ -19,6 +19,8 @@ public:
 
     QSqlDatabase users;
     QSqlTableModel *tusers;
+    QSqlRecord userRecord;
+    QSqlRecord userRights;
     //QSqlQueryModel *tusers;
 
 public slots:
