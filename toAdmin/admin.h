@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtSql>
 #include <QMessageBox>
+#include "rights.h"
 
 namespace Ui {
 class Admin;
@@ -14,13 +15,11 @@ class Admin : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Admin(QWidget *parent = 0);//, QSqlDatabase users = QSqlDatabase::addDatabase("QMYSQL"));
+    explicit Admin(QWidget *parent, QSqlDatabase &db);
     ~Admin();
 
-    QSqlDatabase users;
-    QSqlTableModel *tusers;
-    QSqlRecord userRecord;
-    QSqlRecord userRights;
+    QSqlTableModel *tmUsers;
+    Rights *rights;
     //QSqlQueryModel *tusers;
 
 public slots:

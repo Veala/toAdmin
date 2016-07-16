@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Admin</class>
  <widget class="QMainWindow" name="Admin">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Admin</string>
+   <string>Администрирование прав доступа пользователей ПО КПА</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -31,7 +34,7 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>Пользователи</string>
+     <string>Пользователь</string>
     </property>
     <addaction name="addUserAction"/>
     <addaction name="accessRightsAction"/>
@@ -42,7 +45,10 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="addUserAction">
    <property name="text">
-    <string>Добавить пользователя</string>
+    <string>Добавить пользователья</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="delUserAction">
@@ -52,10 +58,16 @@
    <property name="toolTip">
     <string>Удалить выбранного пользователя</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="accessRightsAction">
    <property name="text">
     <string>Редактировать права пользователя</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

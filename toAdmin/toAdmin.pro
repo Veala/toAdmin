@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        admin.cpp
+        admin.cpp \
+        rights.cpp
 
-HEADERS  += admin.h
+HEADERS  += admin.h \
+            rights.h
 
-FORMS    += admin.ui
+FORMS    += admin.ui \
+            rights.ui
