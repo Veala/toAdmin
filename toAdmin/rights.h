@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtSql>
+#include <QTableView>
 #include <QMessageBox>
 
 namespace Ui {
@@ -19,11 +20,13 @@ public:
 
     QSqlRelationalTableModel *tmRights;
     QSqlTableModel *tmLogPas;
+    QTableView *lpView;
 
 public slots:
     void init(int uKey, QString uNmae);
     void sorting(int,Qt::SortOrder);
     void addRights();
+    void logPas();
     void delRights();
 
 private:

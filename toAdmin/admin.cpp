@@ -12,6 +12,8 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     tmUsers->setEditStrategy(QSqlTableModel::OnFieldChange);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
+    ui->tableView->addAction(ui->accessRightsAction);
     tmUsers->setTable("tabusers");
 
     QHeaderView *horizontalHeader = new QHeaderView(Qt::Horizontal, ui->tableView);
@@ -58,13 +60,31 @@ void Admin::sorting(int column, Qt::SortOrder sortOrder)
 
 void Admin::addUser()
 {
+    userDialog uDialog;
+    if (!uDialog.exec()) {
+        ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
+        return;
+    }
+    QSqlQuery addQuery(tmUsers->database());
+    if (!addQuery.exec("SELECT idTabUsers FROM tabusers;")) {
+        ui->statusBar->showMessage("Ошибка при добавлении пользователя: " + addQuery.lastError().text());
+        return;
+    }
+    if (!addQuery.last()) {
+        ui->statusBar->showMessage("Ошибка при добавлении пользователя: " + addQuery.lastError().text());
+        return;
+    }
+    int lastKeyUser = addQuery.value(0).toInt();
+
+    qDebug() << "lastKeyUser: " + QString::number(lastKeyUser);
+
     QSqlRecord rec(tmUsers->record());
-    rec.setValue(0, 5);
+    rec.setValue(0, lastKeyUser+1);
     for (int i=1; i<rec.count() - 1; i++)
-        rec.setValue(i, tmUsers->headerData(i, Qt::Horizontal));
-    rec.setValue(8, 0);
+        rec.setValue(i, uDialog.data.at(i-1));
+    rec.setValue(8, uDialog.flat);
     tmUsers->insertRecord(-1,rec);
-    ui->statusBar->showMessage(tr("В конец таблицы добавлено поле для редактирования(Фамилия, Имя, ...)"), 10000);
+    ui->statusBar->showMessage(tr("В конец таблицы добавлен новый пользователь"), 10000);
 }
 
 void Admin::delUser()

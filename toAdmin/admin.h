@@ -5,6 +5,7 @@
 #include <QtSql>
 #include <QMessageBox>
 #include "rights.h"
+#include "userdialog.h"
 
 namespace Ui {
 class Admin;

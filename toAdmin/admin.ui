@@ -19,7 +19,11 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTableView" name="tableView"/>
+     <widget class="QTableView" name="tableView">
+      <property name="toolTip">
+       <string>Редактировать поле</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -37,7 +41,6 @@
      <string>Пользователь</string>
     </property>
     <addaction name="addUserAction"/>
-    <addaction name="accessRightsAction"/>
     <addaction name="delUserAction"/>
    </widget>
    <addaction name="menu"/>
@@ -45,7 +48,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="addUserAction">
    <property name="text">
-    <string>Добавить пользователья</string>
+    <string>Добавить пользователя</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -64,10 +67,10 @@
   </action>
   <action name="accessRightsAction">
    <property name="text">
-    <string>Редактировать права пользователя</string>
+    <string>Редактировать права</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
+   <property name="toolTip">
+    <string>Редактировать права пользователя</string>
    </property>
   </action>
  </widget>

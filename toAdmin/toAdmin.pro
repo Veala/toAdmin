@@ -11,13 +11,15 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = toAdmin
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         admin.cpp \
-        rights.cpp
+        rights.cpp \
+    userdialog.cpp
 
 HEADERS  += admin.h \
-            rights.h
+            rights.h \
+    userdialog.h
 
 FORMS    += admin.ui \
-            rights.ui
+            rights.ui \
+    userdialog.ui
