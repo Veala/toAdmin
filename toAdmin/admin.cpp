@@ -10,7 +10,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     tmUsers = new QSqlTableModel(this,  db);
     rights = new Rights(this,  db);
     tmUsers->setEditStrategy(QSqlTableModel::OnFieldChange);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);//EditTriggers();
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     tmUsers->setTable("tabusers");
 
@@ -18,6 +18,8 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     ui->tableView->setHorizontalHeader(horizontalHeader);
     horizontalHeader->setSortIndicatorShown(true);
     horizontalHeader->setSectionsClickable(true);
+    horizontalHeader->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     connect(horizontalHeader,SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),this, SLOT(sorting(int,Qt::SortOrder)));
     tmUsers->setHeaderData(0, Qt::Horizontal, tr("ИД"));
     tmUsers->setHeaderData(1, Qt::Horizontal, tr("Фамилия"));
@@ -34,6 +36,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
 
     ui->tableView->setModel(tmUsers);
     ui->tableView->setColumnHidden(0,true);
+    //ui->tableView->resizeColumnsToContents();
 
     connect(ui->addUserAction, SIGNAL(triggered(bool)), this, SLOT(addUser()));
     connect(ui->accessRightsAction, SIGNAL(triggered(bool)), this, SLOT(accessRights()));

@@ -18,6 +18,7 @@ public:
     ~Rights();
 
     QSqlRelationalTableModel *tmRights;
+    QSqlTableModel *tmLogPas;
 
 public slots:
     void init(int uKey, QString uNmae);
