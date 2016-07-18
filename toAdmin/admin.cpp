@@ -66,7 +66,7 @@ void Admin::addUser()
         return;
     }
     QSqlQuery addQuery(tmUsers->database());
-    if (!addQuery.exec("SELECT idTabUsers FROM tabusers;")) {
+    if (!addQuery.exec("SELECT idTabUsers FROM tabusers ORDER BY idTabUsers ASC;")) {
         ui->statusBar->showMessage("Ошибка при добавлении пользователя: " + addQuery.lastError().text());
         return;
     }

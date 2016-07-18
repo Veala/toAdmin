@@ -85,8 +85,9 @@ Rights::~Rights()
     delete ui;
 }
 
-void Rights::init(int uKey, QString uName)
+void Rights::init(int Key, QString uName)
 {
+    uKey = Key;
     tmRights->setFilter("TabUsers_idTabUsers = " + QString::number(uKey));
     tmRights->select();
     setWindowTitle(tr("Права доступа пользователя: ") + uName);
@@ -100,13 +101,76 @@ void Rights::sorting(int column, Qt::SortOrder sortOrder)
 
 void Rights::addRights()
 {
-//    QSqlRecord rec(tmRights->record());
-//    rec.setValue(0, 3);
-//    for (int i=1; i<rec.count() - 1; i++)
-//        rec.setValue(i, tmUsers->headerData(i, Qt::Horizontal));
-//    rec.setValue(8, 0);
-//    tmUsers->insertRecord(-1,rec);
-//    ui->statusBar->showMessage(tr("В конец таблицы добавлено поле для редактирования(Фамилия, Имя, ...)"), 10000);
+    QSqlQuery testKindsQuery(tmRights->database());
+    QSqlQuery typeProductsQuery(tmRights->database());
+    QSqlQuery authorityKindsQuery(tmRights->database());
+    if (!testKindsQuery.exec("SELECT * FROM tabtestkinds;")) {
+        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + testKindsQuery.lastError().text());
+        return;
+    }
+    if (!typeProductsQuery.exec("SELECT * FROM tabtypeproducts;")) {
+        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + typeProductsQuery.lastError().text());
+        return;
+    }
+    if (!authorityKindsQuery.exec("SELECT * FROM tabauthoritykinds;")) {
+        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + authorityKindsQuery.lastError().text());
+        return;
+    }
+
+    QStringList nameTestKinds, nameTypeProducts, nameAuthorityKinds;
+    QVector<int> idTestKinds, idTypeProducts, idAuthorityKinds;
+    for (int i=0; i<testKindsQuery.size(); i++) { testKindsQuery.next(); nameTestKinds.append(testKindsQuery.value(1).toString()); idTestKinds.append(testKindsQuery.value(0).toInt()); }
+    for (int i=0; i<typeProductsQuery.size(); i++) { typeProductsQuery.next(); nameTypeProducts.append(typeProductsQuery.value(1).toString()); idTypeProducts.append(typeProductsQuery.value(0).toInt()); }
+    for (int i=0; i<authorityKindsQuery.size(); i++) { authorityKindsQuery.next(); nameAuthorityKinds.append(authorityKindsQuery.value(1).toString()); idAuthorityKinds.append(authorityKindsQuery.value(0).toInt()); }
+    QVector<QStringList> list;
+    list.append(nameTestKinds); list.append(nameTypeProducts); list.append(nameAuthorityKinds);
+
+    rightDialog rDialog(0, list, uKey, tmRights->database());
+    if (!rDialog.exec()) {
+        ui->statusbar->showMessage("Отмена добавления пользователя", 5000);
+        return;
+    }
+    QSqlQuery addQuery(tmRights->database());
+    if (!addQuery.exec("SELECT idTabAccessRights FROM tabaccessrights ORDER BY idTabAccessRights ASC;")) {
+        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + addQuery.lastError().text());
+        return;
+    }
+    if (!addQuery.last()) {
+        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + addQuery.lastError().text());
+        return;
+    }
+    int lastKeyAccessRights = addQuery.value(0).toInt();
+
+    qDebug() << "lastKeyAccessRights: " + QString::number(lastKeyAccessRights);
+
+    QSqlRecord rec(tmRights->record());
+    qDebug() << idTestKinds.at(rDialog.data.at(2).toInt());
+    qDebug() << idTypeProducts.at(rDialog.data.at(3).toInt());
+    qDebug() << idAuthorityKinds.at(rDialog.data.at(4).toInt());
+    rec.setValue(0, lastKeyAccessRights+1);
+    rec.setValue(1, 1);
+    rec.setValue(2, idTestKinds.at(rDialog.data.at(2).toInt()));
+    rec.setValue(3, idTypeProducts.at(rDialog.data.at(3).toInt()));
+    rec.setValue(4, uKey);
+    rec.setValue(5, idAuthorityKinds.at(rDialog.data.at(4).toInt()));
+
+
+    //----------------------------------------------login password----------------------------------------
+//    QSqlQuery lpQuery(tmLogPas->database());
+//    if (!lpQuery.exec(QString("SELECT idTabLoginPassword FROM tabloginpassword WHERE login = %1 AND password = %2;").arg(rDialog.data.at(0), rDialog.data.at(1)))) {
+//        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + lpQuery.lastError().text());
+//        return;
+//    }
+//    if (!lpQuery.last()) {
+//        ui->statusbar->showMessage("Ошибка при добавлении пользователя: " + lpQuery.lastError().text());
+//        return;
+//    }
+//    int lpKey = addQuery.value(0).toInt();
+
+
+
+    tmRights->insertRecord(-1,rec);
+    ui->statusbar->showMessage(tr("В конец таблицы добавлено право пользователя"), 10000);
 }
 
 void Rights::logPas()

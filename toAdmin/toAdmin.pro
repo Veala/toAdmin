@@ -14,12 +14,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         admin.cpp \
         rights.cpp \
-    userdialog.cpp
+    userdialog.cpp \
+    rightdialog.cpp
 
 HEADERS  += admin.h \
             rights.h \
-    userdialog.h
+    userdialog.h \
+    rightdialog.h
 
 FORMS    += admin.ui \
             rights.ui \
-    userdialog.ui
+    userdialog.ui \
+    rightdialog.ui
