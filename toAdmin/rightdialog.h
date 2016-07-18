@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QtSql>
 #include <QPushButton>
+#include <QMessageBox>
 
 namespace Ui {
 class rightDialog;
@@ -17,11 +18,11 @@ public:
     explicit rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, const QSqlDatabase &database);
     ~rightDialog();
     QStringList data;
-    QSqlDatabase db;
+    const QSqlDatabase *db;
     int uKey;
 
 public slots:
-    void boxClicked(QAbstractButton*);
+    void clickOK(bool);
     void setData();
 
 private:

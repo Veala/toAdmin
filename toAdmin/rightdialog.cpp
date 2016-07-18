@@ -9,9 +9,10 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     ui->comboBox->addItems(strLists.at(0));
     ui->comboBox_2->addItems(strLists.at(1));
     ui->comboBox_3->addItems(strLists.at(2));
-    //connect(this, SIGNAL(accepted()), this, SLOT(setData()));
-    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(boxClicked(QAbstractButton*)));
-    db = database;
+    connect(this, SIGNAL(accepted()), this, SLOT(setData()));
+    connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
+    connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
+    db = &database;
     uKey = Key;
 }
 
@@ -20,15 +21,16 @@ rightDialog::~rightDialog()
     delete ui;
 }
 
-void rightDialog::boxClicked(QAbstractButton *button)
+void rightDialog::clickOK(bool b)
 {
-    if ((QPushButton*)button == ui->buttonBox->button(QDialogButtonBox::Ok)) {
-        qDebug() << "ok button";
-        emit rejected();
-    } else {
-        qDebug() << "cancel button";
-        emit rejected();
+    QString login = ui->lineEdit->text();
+    QSqlQuery loginQuery(*db);
+    if (!loginQuery.exec(QString("SELECT idTabLoginPassword, login FROM tabloginpassword WHERE login = \"%1\";").arg(login))) {
+        QMessageBox::warning(this, tr("Добавление права"), tr("Ошибка при добавлении: ") + loginQuery.lastError().text());
+        return;
     }
+    accept();
+
 }
 
 void rightDialog::setData()
