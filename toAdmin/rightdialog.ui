@@ -50,7 +50,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Вид тестов:</string>
+          <string>Вид испытаний:</string>
          </property>
         </widget>
        </item>
@@ -74,7 +74,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Вид авторизации:</string>
+          <string>Вид полномочий:</string>
          </property>
         </widget>
        </item>

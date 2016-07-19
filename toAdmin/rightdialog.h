@@ -19,7 +19,8 @@ public:
     ~rightDialog();
     QStringList data;
     const QSqlDatabase *db;
-    int uKey;
+    int uKey, lpKey;
+    bool checkLogin();
 
 public slots:
     void clickOK(bool);

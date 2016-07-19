@@ -21,6 +21,29 @@ rightDialog::~rightDialog()
     delete ui;
 }
 
+bool rightDialog::checkLogin()
+{
+    QString login = ui->lineEdit->text();
+    QSqlQuery loginQuery(*db);
+    if (!loginQuery.exec(QString("SELECT idTabLoginPassword, login FROM tabloginpassword WHERE login = \"%1\";").arg(login))) {
+        QMessageBox::warning(this, tr("Добавление права"), tr("Ошибка при добавлении: ") + loginQuery.lastError().text());
+        return false;
+    }
+    if (loginQuery.size() == 0) {
+        return true;
+    }
+    loginQuery.next();
+    int idLP = loginQuery.value(0).toInt();
+
+//    if (!loginQuery.exec(QString("SELECT idTabLoginPassword, login FROM tabloginpassword WHERE login = \"%1\";").arg(login))) {
+//        QMessageBox::warning(this, tr("Добавление права"), tr("Ошибка при добавлении: ") + loginQuery.lastError().text());
+//        return false;
+//    }
+//    if () {
+
+//    }
+}
+
 void rightDialog::clickOK(bool b)
 {
     QString login = ui->lineEdit->text();
@@ -29,6 +52,10 @@ void rightDialog::clickOK(bool b)
         QMessageBox::warning(this, tr("Добавление права"), tr("Ошибка при добавлении: ") + loginQuery.lastError().text());
         return;
     }
+    if (loginQuery.size() == 0) {
+
+    }
+
     accept();
 
 }
