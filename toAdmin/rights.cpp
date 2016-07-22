@@ -40,12 +40,9 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     ui->tableView->setColumnHidden(0,true);
     ui->tableView->setColumnHidden(1,true);
     ui->tableView->setColumnHidden(4,true);
-//    ui->tableView->resizeColumnsToContents();
-//    ui->tableView->resizeRowsToContents();
 
     connect(ui->addRightsAction, SIGNAL(triggered(bool)), this, SLOT(addRights()));
     connect(ui->delRightsAction, SIGNAL(triggered(bool)), this, SLOT(delRights()));
-
 
     //---------------------------------------login password---------------------------
     lpView = new QTableView(0);

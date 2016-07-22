@@ -15,12 +15,14 @@ SOURCES += main.cpp\
         admin.cpp \
         rights.cpp \
     userdialog.cpp \
-    rightdialog.cpp
+    rightdialog.cpp \
+    lp.cpp
 
 HEADERS  += admin.h \
             rights.h \
     userdialog.h \
-    rightdialog.h
+    rightdialog.h \
+    lp.h
 
 FORMS    += admin.ui \
             rights.ui \

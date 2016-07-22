@@ -38,7 +38,6 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
 
     ui->tableView->setModel(tmUsers);
     ui->tableView->setColumnHidden(0,true);
-    //ui->tableView->resizeColumnsToContents();
 
     connect(ui->addUserAction, SIGNAL(triggered(bool)), this, SLOT(addUser()));
     connect(ui->accessRightsAction, SIGNAL(triggered(bool)), this, SLOT(accessRights()));
