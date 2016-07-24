@@ -10,10 +10,11 @@ class LP : public QObject
 {
     Q_OBJECT
 public:
-    explicit LP(QObject *parent, QSqlDatabase &dtb, QString l, QString p, int uid);
+    explicit LP(QObject *parent, QSqlDatabase &dtb, QString l, QString p, int uid, int rid);
     QString newLogin;
     QString newPassword;
     int userId;
+    int currentRihgtId;
     QSqlDatabase *db;
     QSqlQuery *table;
 
