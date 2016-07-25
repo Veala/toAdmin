@@ -14,16 +14,25 @@ public:
     QString newLogin;
     QString newPassword;
     int userId;
-    int currentRihgtId;
+    int lpID;
+    int prevLpID;
+    int currentRihgtId;     //если идет добавление то -1, если удаление то реальный id
     QSqlDatabase *db;
     QSqlQuery *table;
+    QSqlRecord rec;
 
-    int init(QString);
+    void init(QString);
     void newUser();
-    void changeLP();
+    void changeLP_1();      //login тот же, password другой
+    void changeLP_2();      //login другой, password другой
+    void delPrevLP();
     void delUser();
     void delRight();
 
+    void checkTemplate();
+    void createNewLP();
+
+    QString error;
 signals:
 
 public slots:
