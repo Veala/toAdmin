@@ -40,7 +40,6 @@ void LP::setup()
                        "FROM tabaccessrights first, tabloginpassword second "
                        "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
                        "AND second.login = \"%1\";").arg(newLogin));
-    rec = table->record();
     checkTemplate();
 }
 
@@ -48,9 +47,9 @@ void LP::newRight()
 {
     if (table->size() == 0) {   createNewLP();  return; }
     table->next();
-    if (rec.value(0).toInt() != userId) throw QString("Данный логин занят другим пользователем");
+    if (table->value(0).toInt() != userId) throw QString(tr("Данный логин занят другим пользователем"));
     table->previous();  lpID = -1;
-    while (table->next())   if (rec.value(3).toString() == newPassword) { lpID = rec.value(1).toInt(); break; }
+    while (table->next())   if (table->value(3).toString() == newPassword) { lpID = table->value(1).toInt(); break; }
     if (lpID != -1) return;
     createNewLP();
 }
@@ -58,7 +57,7 @@ void LP::newRight()
 void LP::changeLP_1()
 {
     lpID = -1;
-    while (table->next())   if (rec.value(3).toString() == newPassword) { lpID = rec.value(1).toInt(); break; }
+    while (table->next())   if (table->value(3).toString() == newPassword) { lpID = table->value(1).toInt(); break; }
     if (lpID == -1) createNewLP();
     //delPrevLP();
 }

@@ -126,19 +126,21 @@ void Rights::logPas()
         return;
     }
     int lpKey = rowsList.at(0).data().toInt();
+    qDebug() << "lpKey:" << lpKey;
     QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
 
     QSqlQuery qlp(tmRights->database());
     qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey)));
-    QSqlRecord rec = qlp.record();  qlp.next();
+    qlp.next();
 
-    lpDialog lpdialog(0, rec.value(1).toString(), rec.value(2).toString(), tmRights->database());
+    lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), tmRights->database());
     lpdialog.setWindowTitle(numStr);
     lpdialog.lpID = lpKey;
     lpdialog.uID = ui->tableView->selectionModel()->selectedRows(4).at(0).data().toInt();
     lpdialog.rID = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
 
     if (lpdialog.exec()) {
+        tmRights->select();
         ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
     } else {
         ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);

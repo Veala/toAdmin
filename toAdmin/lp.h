@@ -19,7 +19,6 @@ public:
     int currentRihgtId;     //если идет добавление то -1, если удаление то реальный id
     const QSqlDatabase *db;
     QSqlQuery *table;
-    QSqlRecord rec;
 
     void init(QString);
     void setup();
