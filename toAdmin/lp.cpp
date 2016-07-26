@@ -1,6 +1,6 @@
 #include "lp.h"
 
-LP::LP(QObject *parent, QSqlDatabase &dtb, QString l, QString p, int uid, int rid) : QObject(parent)
+LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid, int rid) : QObject(parent)
 {
     userId = uid;
     currentRihgtId = rid;
@@ -13,22 +13,18 @@ LP::LP(QObject *parent, QSqlDatabase &dtb, QString l, QString p, int uid, int ri
 //---------------------------------------idUser---idLP---Login---Password----------------------------------------------------
 void LP::init(QString type)
 {
+    int intType;
+    if (type == "newRight();") intType = 1;
+    else if (type == "changeLP_1();") intType = 2;
+    else if (type == "changeLP_2();") intType = 3;
     try {
-        table.exec(QString("SELECT first.tabusers_idtabusers, first.TabLoginpassword_idtabloginpassword, second.login, second.password "
-                           "FROM tabaccessrights first, tabloginpassword second "
-                           "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
-                           "AND second.login = \"%1\";").arg(newLogin));
-        rec = table->record();
-        checkTemplate();
-        switch (type) {
-        case "newUser();"     :   newUser();    break;
-        case "changeLP_1();"  :   changeLP_1(); break;
-        case "changeLP_2();"  :   changeLP_2(); break;
-        case "delUser();"     :   delUser();    break;
-        case "delRight();"    :   delRight();   break;
-        default               :   break;
+        switch (intType) {
+        case 1  :   setup();  newRight();    break;
+        case 2  :   setup();  changeLP_1();  break;
+        case 3  :   setup();  changeLP_2();  break;
+        default :   break;
         }
-        throw "Ok";
+        throw QString("Ok");
     }
     catch (const QString& err) {
         error = err;
@@ -38,7 +34,17 @@ void LP::init(QString type)
     }
 }
 
-void LP::newUser()
+void LP::setup()
+{
+    table->exec(QString("SELECT first.tabusers_idtabusers, first.TabLoginpassword_idtabloginpassword, second.login, second.password "
+                       "FROM tabaccessrights first, tabloginpassword second "
+                       "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
+                       "AND second.login = \"%1\";").arg(newLogin));
+    rec = table->record();
+    checkTemplate();
+}
+
+void LP::newRight()
 {
     if (table->size() == 0) {   createNewLP();  return; }
     table->next();
@@ -54,13 +60,13 @@ void LP::changeLP_1()
     lpID = -1;
     while (table->next())   if (rec.value(3).toString() == newPassword) { lpID = rec.value(1).toInt(); break; }
     if (lpID == -1) createNewLP();
-    delPrevLP();
+    //delPrevLP();
 }
 
 void LP::changeLP_2()
 {
-    newUser();
-    delPrevLP();
+    newRight();
+    //delPrevLP();
 }
 
 void LP::delPrevLP()
@@ -68,18 +74,8 @@ void LP::delPrevLP()
     QSqlQuery qPrevLpID(*db);
     qPrevLpID.exec(QString("SELECT TabLoginPassword_idTabLoginPassword FROM tabaccessrights "
                            "WHERE TabLoginPassword_idTabLoginPassword = %1;").arg(QString::number(prevLpID)));
-    if (qPrevLpID.size() > 1) return;
+    if (qPrevLpID.size() >= 1) return;
     qPrevLpID.exec(QString("DELETE FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(prevLpID)));
-}
-
-void LP::delUser()
-{
-
-}
-
-void LP::delRight()
-{
-
 }
 
 void LP::checkTemplate()

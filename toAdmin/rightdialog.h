@@ -5,6 +5,7 @@
 #include <QtSql>
 #include <QPushButton>
 #include <QMessageBox>
+#include "lp.h"
 
 namespace Ui {
 class rightDialog;
@@ -19,8 +20,8 @@ public:
     ~rightDialog();
     QStringList data;
     const QSqlDatabase *db;
-    int uKey, lpKey;
-    bool checkLogin();
+    //QSqlDatabase *db;
+    int uKey, lpID;
 
 public slots:
     void clickOK(bool);

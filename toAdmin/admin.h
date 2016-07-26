@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include "rights.h"
 #include "userdialog.h"
+#include "lp.h"
 
 namespace Ui {
 class Admin;

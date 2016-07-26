@@ -43,31 +43,6 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
 
     connect(ui->addRightsAction, SIGNAL(triggered(bool)), this, SLOT(addRights()));
     connect(ui->delRightsAction, SIGNAL(triggered(bool)), this, SLOT(delRights()));
-
-    //---------------------------------------login password---------------------------
-    lpView = new QTableView(0);
-    tmLogPas = new QSqlTableModel(lpView, db);
-
-    tmLogPas->setEditStrategy(QSqlTableModel::OnFieldChange);
-    lpView->setSelectionBehavior(QAbstractItemView::SelectItems);
-    lpView->setSelectionMode(QAbstractItemView::SingleSelection);
-    lpView->setWindowModality(Qt::ApplicationModal);
-    lpView->setToolTip(tr("Редактировать поле"));
-    lpView->resize(200,50);
-    tmLogPas->setTable("tabloginpassword");
-
-    QHeaderView *horizontalHeader_lp = new QHeaderView(Qt::Horizontal, lpView);
-    lpView->setHorizontalHeader(horizontalHeader_lp);
-    horizontalHeader_lp->setSectionResizeMode(QHeaderView::ResizeToContents);
-    //lpView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    tmLogPas->setHeaderData(0, Qt::Horizontal, tr("ИД"));
-    tmLogPas->setHeaderData(1, Qt::Horizontal, tr("Логин"));
-    tmLogPas->setHeaderData(2, Qt::Horizontal, tr("Пароль"));
-    lpView->verticalHeader()->setHidden(true);
-
-    lpView->setModel(tmLogPas);
-    lpView->setColumnHidden(0,true);
-
     connect(ui->logPasAction, SIGNAL(triggered(bool)), this, SLOT(logPas()));
 
     //---------------------------------------status bar---------------------------
@@ -78,7 +53,6 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
 
 Rights::~Rights()
 {
-    delete lpView;
     delete ui;
 }
 
@@ -132,12 +106,12 @@ void Rights::addRights()
     qDebug() << idTypeProducts.at(rDialog.data.at(3).toInt());
     qDebug() << idAuthorityKinds.at(rDialog.data.at(4).toInt());
     //rec.setValue(0, lastKeyAccessRights+1);
-    rec.setValue(1, 1);
+
+    rec.setValue(1, rDialog.lpID);
     rec.setValue(2, idTestKinds.at(rDialog.data.at(2).toInt()));
     rec.setValue(3, idTypeProducts.at(rDialog.data.at(3).toInt()));
     rec.setValue(4, uKey);
     rec.setValue(5, idAuthorityKinds.at(rDialog.data.at(4).toInt()));
-
 
     tmRights->insertRecord(-1,rec);
     tmRights->select();
@@ -153,22 +127,44 @@ void Rights::logPas()
     }
     int lpKey = rowsList.at(0).data().toInt();
     QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
-    tmLogPas->setFilter("idTabLoginPassword = " + QString::number(lpKey));
-    lpView->setWindowTitle(numStr);
-    tmLogPas->select();
-    lpView->show();
+
+    QSqlQuery qlp(tmRights->database());
+    qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey)));
+    QSqlRecord rec = qlp.record();  qlp.next();
+
+    lpDialog lpdialog(0, rec.value(1).toString(), rec.value(2).toString(), tmRights->database());
+    lpdialog.setWindowTitle(numStr);
+    lpdialog.lpID = lpKey;
+    lpdialog.uID = ui->tableView->selectionModel()->selectedRows(4).at(0).data().toInt();
+    lpdialog.rID = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
+
+    if (lpdialog.exec()) {
+        ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
+    } else {
+        ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);
+        return;
+    }
+
 }
 
 void Rights::delRights()
 {
-    QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(0);
+    QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
     if (rowsList.count() == 0) {
         QMessageBox::warning(this, tr("Удаление права доступа"), tr("В таблице нет выделенного права доступа"));
         return;
     }
     if (QMessageBox::No == QMessageBox::question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) return;
 
+    int lpID = rowsList.at(0).data().toInt();
+
     tmRights->removeRow(rowsList.at(0).row());
+
+    LP lp(0, tmRights->database(), "", "", 0, 0);
+    //LP::db = &tmRights->database();
+    lp.prevLpID = lpID;
+    lp.delPrevLP();
+
     tmRights->select();
     ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
 }

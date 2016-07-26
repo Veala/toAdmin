@@ -85,10 +85,22 @@ void Admin::delUser()
     int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
     if (QMessageBox::No == QMessageBox::question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
 
+    QSqlQuery lpQuery(tmUsers->database());
+    if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
+        ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
+        return;
+    }
     QSqlQuery delQuery(tmUsers->database());
     if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
         ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
         return;
+    }
+
+    QSqlRecord recLPID = lpQuery.record();
+    LP lp(0, tmUsers->database(), "", "", 0, 0);
+    while (lpQuery.next()) {
+        lp.prevLpID = recLPID.value(0).toInt();
+        lp.delPrevLP();
     }
     tmUsers->removeRow(rowsList.at(0).row());
     tmUsers->select();

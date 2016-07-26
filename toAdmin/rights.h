@@ -6,6 +6,8 @@
 #include <QTableView>
 #include <QMessageBox>
 #include "rightdialog.h"
+#include "lp.h"
+#include "lpdialog.h"
 
 namespace Ui {
 class Rights;
@@ -20,8 +22,6 @@ public:
     ~Rights();
 
     QSqlRelationalTableModel *tmRights;
-    QSqlTableModel *tmLogPas;
-    QTableView *lpView;
     int uKey;
 
 public slots:
