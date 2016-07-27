@@ -2,7 +2,7 @@
 #include "ui_rights.h"
 
 Rights::Rights(QWidget *parent, QSqlDatabase &db) :
-    QDialog(parent),//QMainWindow(parent),
+    QMainWindow(parent),
     ui(new Ui::Rights)
 {
     ui->setupUi(this);
@@ -15,6 +15,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->tableView->addAction(ui->logPasAction);
+    this->addAction(ui->actionEsc);
     tmRights->setTable("tabaccessrights");
 
     tmRights->setRelation(2, QSqlRelation("tabtestkinds", "idTabTestKinds", "nameTestKind"));
@@ -44,6 +45,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     connect(ui->addRightsAction, SIGNAL(triggered(bool)), this, SLOT(addRights()));
     connect(ui->delRightsAction, SIGNAL(triggered(bool)), this, SLOT(delRights()));
     connect(ui->logPasAction, SIGNAL(triggered(bool)), this, SLOT(logPas()));
+    connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
     //---------------------------------------status bar---------------------------
     ui->statusbar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");

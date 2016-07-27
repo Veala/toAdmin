@@ -82,6 +82,17 @@
     <string>Логин пароль</string>
    </property>
   </action>
+  <action name="actionEsc">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+   <property name="toolTip">
+    <string>Выход</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

@@ -2,7 +2,6 @@
 #define RIGHTS_H
 
 #include <QMainWindow>
-#include <QDialog>
 #include <QtSql>
 #include <QTableView>
 #include <QMessageBox>
@@ -14,7 +13,7 @@ namespace Ui {
 class Rights;
 }
 
-class Rights : public QDialog
+class Rights : public QMainWindow
 {
     Q_OBJECT
 

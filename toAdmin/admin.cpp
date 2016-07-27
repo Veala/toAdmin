@@ -14,6 +14,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->tableView->addAction(ui->accessRightsAction);
+    this->addAction(ui->actionEsc);
     tmUsers->setTable("tabusers");
 
     QHeaderView *horizontalHeader = new QHeaderView(Qt::Horizontal, ui->tableView);
@@ -42,6 +43,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     connect(ui->addUserAction, SIGNAL(triggered(bool)), this, SLOT(addUser()));
     connect(ui->accessRightsAction, SIGNAL(triggered(bool)), this, SLOT(accessRights()));
     connect(ui->delUserAction, SIGNAL(triggered(bool)), this, SLOT(delUser()));
+    connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
     ui->statusBar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");
     ui->statusBar->setSizeGripEnabled(false);

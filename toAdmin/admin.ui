@@ -73,6 +73,17 @@
     <string>Редактировать права пользователя</string>
    </property>
   </action>
+  <action name="actionEsc">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+   <property name="toolTip">
+    <string>Выход</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
