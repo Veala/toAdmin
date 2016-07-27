@@ -1,9 +1,8 @@
 #include "lp.h"
 
-LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid, int rid) : QObject(parent)
+LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) : QObject(parent)
 {
     userId = uid;
-    currentRihgtId = rid;
     newLogin = l;
     newPassword = p;
     db = &dtb;
@@ -90,5 +89,5 @@ void LP::createNewLP()
     QSqlQuery newLP(*db);
     newLP.exec(QString("INSERT INTO tabloginpassword (login, password) VALUES ('%1', '%2');").arg(newLogin, newPassword));
     lpID = newLP.lastInsertId().toInt();
-    qDebug() << "last id: " + QString::number(newLP.lastInsertId().toInt());
+//    qDebug() << "last id: " + QString::number(newLP.lastInsertId().toInt());
 }

@@ -10,13 +10,12 @@ class LP : public QObject
 {
     Q_OBJECT
 public:
-    explicit LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid, int rid);
+    explicit LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid);
     QString newLogin;
     QString newPassword;
     int userId;
     int lpID;
     int prevLpID;
-    int currentRihgtId;     //если идет добавление то -1, если удаление то реальный id
     const QSqlDatabase *db;
     QSqlQuery *table;
 

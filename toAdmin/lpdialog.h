@@ -21,7 +21,7 @@ public:
     const QSqlDatabase *db;
     int uID, lpID, rID;
     QString currentL, currentP;
-    QString message;
+    //QString message;
 
 public slots:
     void clickOK(bool);

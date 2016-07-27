@@ -20,7 +20,6 @@ public:
     ~rightDialog();
     QStringList data;
     const QSqlDatabase *db;
-    //QSqlDatabase *db;
     int uKey, lpID;
 
 public slots:

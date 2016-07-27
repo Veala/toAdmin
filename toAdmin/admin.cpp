@@ -98,8 +98,7 @@ void Admin::delUser()
         return;
     }
 
-    //QSqlRecord recLPID = lpQuery.record();
-    LP lp(0, tmUsers->database(), "", "", 0, 0);
+    LP lp(0, tmUsers->database(), "", "", 0);
     while (lpQuery.next()) {
         lp.prevLpID = lpQuery.value(0).toInt();
         lp.delPrevLP();

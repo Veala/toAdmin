@@ -25,7 +25,7 @@ void rightDialog::clickOK(bool b)
 {
     QString login    = ui->lineEdit->text();
     QString password = ui->lineEdit_2->text();
-    LP lp(0, *db, login, password, uKey, 0);
+    LP lp(0, *db, login, password, uKey);
     lp.init("newRight();");
     if (lp.error == "Ok") {
         lpID = lp.lpID;

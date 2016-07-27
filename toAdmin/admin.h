@@ -22,7 +22,6 @@ public:
 
     QSqlTableModel *tmUsers;
     Rights *rights;
-    //QSqlQueryModel *tusers;
 
 public slots:
     void sorting(int,Qt::SortOrder);

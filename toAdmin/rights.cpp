@@ -50,7 +50,6 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     //---------------------------------------status bar---------------------------
     ui->statusbar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");
     ui->statusbar->setSizeGripEnabled(false);
-
 }
 
 Rights::~Rights()
@@ -104,11 +103,11 @@ void Rights::addRights()
     }
 
     QSqlRecord rec(tmRights->record());
-    qDebug() << idTestKinds.at(rDialog.data.at(2).toInt());
-    qDebug() << idTypeProducts.at(rDialog.data.at(3).toInt());
-    qDebug() << idAuthorityKinds.at(rDialog.data.at(4).toInt());
-    //rec.setValue(0, lastKeyAccessRights+1);
+//    qDebug() << idTestKinds.at(rDialog.data.at(2).toInt());
+//    qDebug() << idTypeProducts.at(rDialog.data.at(3).toInt());
+//    qDebug() << idAuthorityKinds.at(rDialog.data.at(4).toInt());
 
+//    rec.setValue(0, lastKeyAccessRights+1);
     rec.setValue(1, rDialog.lpID);
     rec.setValue(2, idTestKinds.at(rDialog.data.at(2).toInt()));
     rec.setValue(3, idTypeProducts.at(rDialog.data.at(3).toInt()));
@@ -128,7 +127,7 @@ void Rights::logPas()
         return;
     }
     int lpKey = rowsList.at(0).data().toInt();
-    qDebug() << "lpKey:" << lpKey;
+//    qDebug() << "lpKey:" << lpKey;
     QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
 
     QSqlQuery qlp(tmRights->database());
@@ -148,7 +147,6 @@ void Rights::logPas()
         ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);
         return;
     }
-
 }
 
 void Rights::delRights()
@@ -164,8 +162,7 @@ void Rights::delRights()
 
     tmRights->removeRow(rowsList.at(0).row());
 
-    LP lp(0, tmRights->database(), "", "", 0, 0);
-    //LP::db = &tmRights->database();
+    LP lp(0, tmRights->database(), "", "", 0);
     lp.prevLpID = lpID;
     lp.delPrevLP();
 

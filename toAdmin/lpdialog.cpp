@@ -7,7 +7,6 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDataba
 {
     ui->setupUi(this);
 
-    //connect(this, SIGNAL(accepted()), this, SLOT(setData()));
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
     db = &database;
@@ -26,7 +25,7 @@ void lpDialog::clickOK(bool b)
 {
     QString login    = ui->lineEdit->text();
     QString password = ui->lineEdit_2->text();
-    LP lp(0, *db, login, password, uID, 0);
+    LP lp(0, *db, login, password, uID);
     lp.prevLpID = lpID;
     if ((currentL == login) && (currentP == password)) {
         accept(); return;
@@ -36,15 +35,12 @@ void lpDialog::clickOK(bool b)
         lp.init("changeLP_2();");
     }
     if (lp.error == "Ok") {
-        //дальше нужно заменить lpID на newLpID в праве доступа
         QSqlQuery update(*db);
         update.exec(QString("UPDATE tabaccessrights SET TabLoginPassword_idTabLoginPassword = %1 "
                             "WHERE idtabaccessrights = %2;").arg(QString::number(lp.lpID), QString::number(rID)));
-        //удаление предыдущего пароля
         lp.delPrevLP();
         accept();
     } else {
         QMessageBox::warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
     }
-
 }
