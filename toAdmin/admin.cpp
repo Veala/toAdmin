@@ -75,7 +75,7 @@ void Admin::addUser()
 }
 
 void Admin::delUser()
-{    
+{
     QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
     if (rowsList.count() == 0) {
         QMessageBox::warning(this, tr("Удаление пользователя"), tr("В таблице нет выделенного пользователя"));
@@ -102,9 +102,10 @@ void Admin::delUser()
         lp.prevLpID = lpQuery.value(0).toInt();
         lp.delPrevLP();
     }
-    tmUsers->removeRow(rowsList.at(0).row());
+    bool b = tmUsers->removeRow(rowsList.at(0).row());
     tmUsers->select();
-    ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
+    if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
+    else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
 }
 
 void Admin::accessRights()

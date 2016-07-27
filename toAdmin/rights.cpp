@@ -2,7 +2,7 @@
 #include "ui_rights.h"
 
 Rights::Rights(QWidget *parent, QSqlDatabase &db) :
-    QMainWindow(parent),
+    QDialog(parent),//QMainWindow(parent),
     ui(new Ui::Rights)
 {
     ui->setupUi(this);
