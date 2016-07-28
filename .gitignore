@@ -6,3 +6,5 @@
 #ignore /toAdmin/*.user, *.autosave
 /toAdmin/*.user
 /toAdmin/*.autosave
+#ignore /.svn
+/.svn
