@@ -11,7 +11,7 @@ LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) 
 
 LP::~LP()
 {
-    qDebug() << "delete table";
+//    qDebug() << "delete table";
     delete table;
 }
 
