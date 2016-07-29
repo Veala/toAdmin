@@ -6,6 +6,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     ui(new Ui::Admin)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/img/img.png"));
 
     tmUsers = new QSqlTableModel(this,  db);
     rights = new Rights(this,  db);
@@ -45,6 +46,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     connect(ui->delUserAction, SIGNAL(triggered(bool)), this, SLOT(delUser()));
     connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
     ui->statusBar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");
     ui->statusBar->setSizeGripEnabled(false);
 }
@@ -80,12 +82,12 @@ void Admin::delUser()
 {
     QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
     if (rowsList.count() == 0) {
-        QMessageBox::warning(this, tr("Удаление пользователя"), tr("В таблице нет выделенного пользователя"));
+        messageBox.warning(this, tr("Удаление пользователя"), tr("В таблице нет выделенного пользователя"));
         return;
     }
     QString family = rowsList.at(0).data().toString();
     int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
-    if (QMessageBox::No == QMessageBox::question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
+    if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
 
     QSqlQuery lpQuery(tmUsers->database());
     if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
@@ -113,7 +115,7 @@ void Admin::accessRights()
 {
     QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(0);
     if (rowsList.count() == 0) {
-        QMessageBox::warning(this, tr("Редактирование прав пользователя"), tr("В таблице нет выделенного пользователя"));
+        messageBox.warning(this, tr("Редактирование прав пользователя"), tr("В таблице нет выделенного пользователя"));
         return;
     }
     int uKey = rowsList.at(0).data().toInt();

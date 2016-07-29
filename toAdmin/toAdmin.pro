@@ -11,23 +11,25 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = toAdmin
 TEMPLATE = app
 
-SOURCES += main.cpp\
-        admin.cpp \
-        rights.cpp \
-    userdialog.cpp \
-    rightdialog.cpp \
-    lp.cpp \
-    lpdialog.cpp
+SOURCES +=  $$PWD/admin.cpp \
+            $$PWD/rights.cpp \
+    $$PWD/userdialog.cpp \
+    $$PWD/rightdialog.cpp \
+    $$PWD/lp.cpp \
+    $$PWD/lpdialog.cpp
 
-HEADERS  += admin.h \
-            rights.h \
-    userdialog.h \
-    rightdialog.h \
-    lp.h \
-    lpdialog.h
+HEADERS  += $$PWD/admin.h \
+            $$PWD/rights.h \
+    $$PWD/userdialog.h \
+    $$PWD/rightdialog.h \
+    $$PWD/lp.h \
+    $$PWD/lpdialog.h
 
-FORMS    += admin.ui \
-            rights.ui \
-    userdialog.ui \
-    rightdialog.ui \
-    lpdialog.ui
+FORMS    += $$PWD/admin.ui \
+            $$PWD/rights.ui \
+    $$PWD/userdialog.ui \
+    $$PWD/rightdialog.ui \
+    $$PWD/lpdialog.ui
+
+RESOURCES += \
+    $$PWD/resource.qrc

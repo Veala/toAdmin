@@ -11,6 +11,7 @@ class LP : public QObject
     Q_OBJECT
 public:
     explicit LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid);
+    ~LP();
     QString newLogin;
     QString newPassword;
     int userId;

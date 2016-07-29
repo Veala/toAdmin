@@ -6,6 +6,7 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDataba
     ui(new Ui::lpDialog)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/img/img.png"));
 
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
@@ -14,6 +15,8 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDataba
     currentP = curP;
     ui->lineEdit->setText(currentL);
     ui->lineEdit_2->setText(currentP);
+
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
 }
 
 lpDialog::~lpDialog()
@@ -41,6 +44,6 @@ void lpDialog::clickOK(bool b)
         lp.delPrevLP();
         accept();
     } else {
-        QMessageBox::warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
+        messageBox.warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
     }
 }

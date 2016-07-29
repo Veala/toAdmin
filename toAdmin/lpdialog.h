@@ -21,6 +21,7 @@ public:
     const QSqlDatabase *db;
     int uID, lpID, rID;
     QString currentL, currentP;
+    QMessageBox messageBox;
     //QString message;
 
 public slots:

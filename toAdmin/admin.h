@@ -22,6 +22,7 @@ public:
 
     QSqlTableModel *tmUsers;
     Rights *rights;
+    QMessageBox messageBox;
 
 public slots:
     void sorting(int,Qt::SortOrder);

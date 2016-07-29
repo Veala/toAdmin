@@ -6,6 +6,8 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     ui(new Ui::rightDialog)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/img/img.png"));
+
     ui->comboBox->addItems(strLists.at(0));
     ui->comboBox_2->addItems(strLists.at(1));
     ui->comboBox_3->addItems(strLists.at(2));
@@ -14,6 +16,8 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
     db = &database;
     uKey = Key;
+
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
 }
 
 rightDialog::~rightDialog()
@@ -31,7 +35,7 @@ void rightDialog::clickOK(bool b)
         lpID = lp.lpID;
         accept();
     } else {
-        QMessageBox::warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
+        messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
     }
 
 }

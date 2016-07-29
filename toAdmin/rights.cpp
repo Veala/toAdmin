@@ -6,6 +6,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     ui(new Ui::Rights)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/img/img.png"));
 
     //---------------------------------------access rights---------------------------
     tmRights = new QSqlRelationalTableModel(this, db);
@@ -47,6 +48,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     connect(ui->logPasAction, SIGNAL(triggered(bool)), this, SLOT(logPas()));
     connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
     //---------------------------------------status bar---------------------------
     ui->statusbar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");
     ui->statusbar->setSizeGripEnabled(false);
@@ -123,7 +125,7 @@ void Rights::logPas()
 {
     QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
     if (rowsList.count() == 0) {
-        QMessageBox::warning(this, tr("Логин-пароль"), tr("В таблице нет выделенного поля"));
+        messageBox.warning(this, tr("Логин-пароль"), tr("В таблице нет выделенного поля"));
         return;
     }
     int lpKey = rowsList.at(0).data().toInt();
@@ -153,10 +155,10 @@ void Rights::delRights()
 {
     QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
     if (rowsList.count() == 0) {
-        QMessageBox::warning(this, tr("Удаление права доступа"), tr("В таблице нет выделенного права доступа"));
+        messageBox.warning(this, tr("Удаление права доступа"), tr("В таблице нет выделенного права доступа"));
         return;
     }
-    if (QMessageBox::No == QMessageBox::question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) return;
+    if (QMessageBox::No == messageBox.question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) return;
 
     int lpID = rowsList.at(0).data().toInt();
 

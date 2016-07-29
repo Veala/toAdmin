@@ -23,6 +23,7 @@ public:
 
     QSqlRelationalTableModel *tmRights;
     int uKey;
+    QMessageBox messageBox;
 
 public slots:
     void init(int uKey, QString uNmae);

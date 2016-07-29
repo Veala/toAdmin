@@ -9,6 +9,12 @@ LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) 
     table = new QSqlQuery(*db);
 }
 
+LP::~LP()
+{
+    qDebug() << "delete table";
+    delete table;
+}
+
 //---------------------------------------idUser---idLP---Login---Password----------------------------------------------------
 void LP::init(QString type)
 {

@@ -6,6 +6,7 @@ userDialog::userDialog(QWidget *parent) :
     ui(new Ui::userDialog)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/img/img.png"));
 
     connect(this, SIGNAL(accepted()), this, SLOT(setData()));
 }

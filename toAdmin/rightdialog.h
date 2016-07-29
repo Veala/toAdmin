@@ -21,6 +21,7 @@ public:
     QStringList data;
     const QSqlDatabase *db;
     int uKey, lpID;
+    QMessageBox messageBox;
 
 public slots:
     void clickOK(bool);
