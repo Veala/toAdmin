@@ -7,6 +7,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
 {
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/img/img.png"));
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
     tmUsers = new QSqlTableModel(this,  db);
     rights = new Rights(this,  db);
@@ -36,7 +37,10 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     tmUsers->setHeaderData(8, Qt::Horizontal, tr("Комната"));
 
     tmUsers->setSort(1, Qt::AscendingOrder);
-    if (!tmUsers->select()) qDebug() << "error-tabusers: " << tmUsers->lastError().text();
+    if (!tmUsers->select()) {
+        messageBox.warning(this, tr("Ошибка инициализации"), tmUsers->lastError().text());
+        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
+    }
 
     ui->tableView->setModel(tmUsers);
     ui->tableView->setColumnHidden(0,true);
@@ -46,7 +50,6 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
     connect(ui->delUserAction, SIGNAL(triggered(bool)), this, SLOT(delUser()));
     connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
-    messageBox.setWindowIcon(QIcon(":/img/img.png"));
     ui->statusBar->setStyleSheet("background-color: rgb(255, 255, 255); border-top: 1px solid black;");
     ui->statusBar->setSizeGripEnabled(false);
 }
@@ -63,64 +66,79 @@ void Admin::sorting(int column, Qt::SortOrder sortOrder)
 
 void Admin::addUser()
 {
-    userDialog uDialog;
-    if (!uDialog.exec()) {
-        ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
-        return;
+    try {
+        userDialog uDialog;
+        if (!uDialog.exec()) {
+            ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
+            return;
+        }
+        QSqlRecord rec(tmUsers->record());
+        //rec.setValue(0, lastKeyUser+1);
+        for (int i=1; i<rec.count() - 1; i++)
+            rec.setValue(i, uDialog.data.at(i-1));
+        rec.setValue(8, uDialog.flat);
+        if(!tmUsers->insertRecord(-1,rec)) throw criticalExc("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
+        if(!tmUsers->select()) throw criticalExc("tmUsers->select() 1: " + tmUsers->lastError().text());
+        ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
-    QSqlRecord rec(tmUsers->record());
-    //rec.setValue(0, lastKeyUser+1);
-    for (int i=1; i<rec.count() - 1; i++)
-        rec.setValue(i, uDialog.data.at(i-1));
-    rec.setValue(8, uDialog.flat);
-    tmUsers->insertRecord(-1,rec);
-    tmUsers->select();
-    ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
+    catch (const criticalExc& exc) {
+        messageBox.warning(this, tr("Ошибка при добавлении"), exc);
+    }
 }
 
 void Admin::delUser()
 {
-    QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
-    if (rowsList.count() == 0) {
-        messageBox.warning(this, tr("Удаление пользователя"), tr("В таблице нет выделенного пользователя"));
-        return;
-    }
-    QString family = rowsList.at(0).data().toString();
-    int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
-    if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
+    try {
+        QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
+        if (rowsList.count() == 0) {
+            messageBox.warning(this, tr("Удаление пользователя"), tr("В таблице нет выделенного пользователя"));
+            return;
+        }
+        QString family = rowsList.at(0).data().toString();
+        int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
+        if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
 
-    QSqlQuery lpQuery(tmUsers->database());
-    if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
-        ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
-        return;
-    }
-    QSqlQuery delQuery(tmUsers->database());
-    if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
-        ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
-        return;
-    }
+        QSqlQuery lpQuery(tmUsers->database());
+        if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
+            ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
+            throw criticalExc("Select 1u: " + lpQuery.lastError().text());
+        }
+        QSqlQuery delQuery(tmUsers->database());
+        if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
+            ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
+            throw criticalExc("Select 2u: " + delQuery.lastError().text());
+        }
 
-    LP lp(0, tmUsers->database(), "", "", 0);
-    while (lpQuery.next()) {
-        lp.prevLpID = lpQuery.value(0).toInt();
-        lp.delPrevLP();
+        LP lp(0, tmUsers->database(), "", "", 0);
+        while (lpQuery.next()) {
+            lp.prevLpID = lpQuery.value(0).toInt();
+            lp.delPrevLP();
+        }
+        bool b = tmUsers->removeRow(rowsList.at(0).row());
+        if(!tmUsers->select()) throw criticalExc("tmUsers->select() 2: " + tmUsers->lastError().text());
+        if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
+        else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
-    bool b = tmUsers->removeRow(rowsList.at(0).row());
-    tmUsers->select();
-    if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
-    else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
+    catch (const criticalExc& exc) {
+        messageBox.warning(this, tr("Ошибка при удалении"), exc);
+    }
 }
 
 void Admin::accessRights()
 {
-    QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(0);
-    if (rowsList.count() == 0) {
-        messageBox.warning(this, tr("Редактирование прав пользователя"), tr("В таблице нет выделенного пользователя"));
-        return;
+    try {
+        QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(0);
+        if (rowsList.count() == 0) {
+            messageBox.warning(this, tr("Редактирование прав пользователя"), tr("В таблице нет выделенного пользователя"));
+            return;
+        }
+        int uKey = rowsList.at(0).data().toInt();
+        QString uName = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString() + " " +
+                ui->tableView->selectionModel()->selectedRows(2).at(0).data().toString() + " " +
+                ui->tableView->selectionModel()->selectedRows(3).at(0).data().toString();
+        rights->init(uKey, uName);
     }
-    int uKey = rowsList.at(0).data().toInt();
-    QString uName = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString() + " " +
-                    ui->tableView->selectionModel()->selectedRows(2).at(0).data().toString() + " " +
-                    ui->tableView->selectionModel()->selectedRows(3).at(0).data().toString();
-    rights->init(uKey, uName);
+    catch (const criticalExc& exc) {
+        messageBox.warning(this, tr("Ошибка прав доступа"), exc);
+    }
 }

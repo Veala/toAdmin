@@ -7,6 +7,7 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
 {
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/img/img.png"));
+    messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
     ui->comboBox->addItems(strLists.at(0));
     ui->comboBox_2->addItems(strLists.at(1));
@@ -16,8 +17,6 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
     db = &database;
     uKey = Key;
-
-    messageBox.setWindowIcon(QIcon(":/img/img.png"));
 }
 
 rightDialog::~rightDialog()
@@ -27,17 +26,21 @@ rightDialog::~rightDialog()
 
 void rightDialog::clickOK(bool b)
 {
-    QString login    = ui->lineEdit->text();
-    QString password = ui->lineEdit_2->text();
-    LP lp(0, *db, login, password, uKey);
-    lp.init("newRight();");
-    if (lp.error == "Ok") {
-        lpID = lp.lpID;
-        accept();
-    } else {
-        messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
+    try {
+        QString login    = ui->lineEdit->text();
+        QString password = ui->lineEdit_2->text();
+        LP lp(0, *db, login, password, uKey);
+        lp.init("newRight();");
+        if (lp.error == "Ok") {
+            lpID = lp.lpID;
+            accept();
+        } else {
+            messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
+        }
     }
-
+    catch (const criticalExc& exc) {
+        messageBox.warning(this, tr("Ошибка добавления прав"), exc);
+    }
 }
 
 void rightDialog::setData()

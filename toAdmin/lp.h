@@ -6,6 +6,13 @@
 #include <QTableView>
 #include <QMessageBox>
 
+class criticalExc : public QString {
+
+public:
+    explicit criticalExc(const QString str);
+
+};
+
 class LP : public QObject
 {
     Q_OBJECT

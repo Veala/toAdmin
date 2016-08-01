@@ -1,5 +1,10 @@
 #include "lp.h"
 
+criticalExc::criticalExc(const QString str) : QString(str)
+{
+
+}
+
 LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) : QObject(parent)
 {
     userId = uid;
@@ -29,14 +34,15 @@ void LP::init(QString type)
         case 3  :   setup();  changeLP_2();  break;
         default :   break;
         }
+        throw criticalExc("YAAAAA");
         throw QString("Ok");
     }
     catch (const QString& err) {
         error = err;
     }
-    catch (...) {
-        error = "Ошибка: операция выполнена неуспешно, повторите попытку позже";
-    }
+//    catch (...) {
+//        error = "Ошибка: операция выполнена неуспешно, повторите попытку позже";
+//    }
 }
 
 void LP::setup()
