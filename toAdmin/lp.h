@@ -6,11 +6,11 @@
 #include <QTableView>
 #include <QMessageBox>
 
-class criticalExc : public QString {
+class lpException {
 
 public:
-    explicit criticalExc(const QString str);
-
+    explicit lpException(const QString &str);
+    QString data;
 };
 
 class LP : public QObject
@@ -26,6 +26,7 @@ public:
     int prevLpID;
     const QSqlDatabase *db;
     QSqlQuery *table;
+    QMap<QString, int> mType;
 
     void init(QString);
     void setup();

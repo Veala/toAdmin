@@ -38,8 +38,11 @@ void rightDialog::clickOK(bool b)
             messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
         }
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка добавления прав"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка добавления прав"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка добавления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
 

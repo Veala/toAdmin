@@ -77,12 +77,15 @@ void Admin::addUser()
         for (int i=1; i<rec.count() - 1; i++)
             rec.setValue(i, uDialog.data.at(i-1));
         rec.setValue(8, uDialog.flat);
-        if(!tmUsers->insertRecord(-1,rec)) throw criticalExc("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
-        if(!tmUsers->select()) throw criticalExc("tmUsers->select() 1: " + tmUsers->lastError().text());
+        if(!tmUsers->insertRecord(-1,rec)) throw QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
+        if(!tmUsers->select()) throw QString("tmUsers->select() 1: " + tmUsers->lastError().text());
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка при добавлении"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
 
@@ -101,12 +104,12 @@ void Admin::delUser()
         QSqlQuery lpQuery(tmUsers->database());
         if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
-            throw criticalExc("Select 1u: " + lpQuery.lastError().text());
+            throw QString("Select 1u: " + lpQuery.lastError().text());
         }
         QSqlQuery delQuery(tmUsers->database());
         if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
-            throw criticalExc("Select 2u: " + delQuery.lastError().text());
+            throw QString("Select 2u: " + delQuery.lastError().text());
         }
 
         LP lp(0, tmUsers->database(), "", "", 0);
@@ -115,12 +118,15 @@ void Admin::delUser()
             lp.delPrevLP();
         }
         bool b = tmUsers->removeRow(rowsList.at(0).row());
-        if(!tmUsers->select()) throw criticalExc("tmUsers->select() 2: " + tmUsers->lastError().text());
+        if(!tmUsers->select()) throw QString("tmUsers->select() 2: " + tmUsers->lastError().text());
         if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
         else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка при удалении"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка при удалении"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
 
@@ -138,7 +144,10 @@ void Admin::accessRights()
                 ui->tableView->selectionModel()->selectedRows(3).at(0).data().toString();
         rights->init(uKey, uName);
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка прав доступа"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка прав доступа"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }

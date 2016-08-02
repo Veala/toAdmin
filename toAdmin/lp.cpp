@@ -1,56 +1,46 @@
 #include "lp.h"
 
-criticalExc::criticalExc(const QString str) : QString(str)
+lpException::lpException(const QString &str)
 {
-
+    data = str;
 }
 
 LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) : QObject(parent)
 {
-    userId = uid;
-    newLogin = l;
-    newPassword = p;
-    db = &dtb;
-    table = new QSqlQuery(*db);
+    userId = uid;   newLogin = l;   newPassword = p;
+    db = &dtb;  table = new QSqlQuery(*db);
+    mType["newRight();"] = 1;   mType["changeLP_1();"] = 2; mType["changeLP_2();"] = 3;
 }
 
 LP::~LP()
 {
-//    qDebug() << "delete table";
     delete table;
 }
 
 //---------------------------------------idUser---idLP---Login---Password----------------------------------------------------
 void LP::init(QString type)
 {
-    int intType;
-    if (type == "newRight();") intType = 1;
-    else if (type == "changeLP_1();") intType = 2;
-    else if (type == "changeLP_2();") intType = 3;
     try {
-        switch (intType) {
-        case 1  :   setup();  newRight();    break;
-        case 2  :   setup();  changeLP_1();  break;
-        case 3  :   setup();  changeLP_2();  break;
+        setup();
+        switch (mType[type]) {
+        case 1  :   newRight();    break;
+        case 2  :   changeLP_1();  break;
+        case 3  :   changeLP_2();  break;
         default :   break;
         }
-        throw criticalExc("YAAAAA");
-        throw QString("Ok");
+        throw lpException("Ok");
     }
-    catch (const QString& err) {
-        error = err;
+    catch (const lpException& err) {
+        error = err.data;
     }
-//    catch (...) {
-//        error = "Ошибка: операция выполнена неуспешно, повторите попытку позже";
-//    }
 }
 
 void LP::setup()
 {
-    table->exec(QString("SELECT first.tabusers_idtabusers, first.TabLoginpassword_idtabloginpassword, second.login, second.password "
-                       "FROM tabaccessrights first, tabloginpassword second "
-                       "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
-                       "AND second.login = \"%1\";").arg(newLogin));
+    if(!table->exec(QString("SELECT first.tabusers_idtabusers, first.TabLoginpassword_idtabloginpassword, second.login, second.password "
+                            "FROM tabaccessrights first, tabloginpassword second "
+                            "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
+                            "AND second.login = \"%1\";").arg(newLogin))) throw QString("Select lp 0: " + table->lastError().text());
     checkTemplate();
 }
 
@@ -58,7 +48,7 @@ void LP::newRight()
 {
     if (table->size() == 0) {   createNewLP();  return; }
     table->next();
-    if (table->value(0).toInt() != userId) throw QString(tr("Данный логин занят другим пользователем"));
+    if (table->value(0).toInt() != userId) throw lpException(tr("Данный логин занят другим пользователем"));
     table->previous();  lpID = -1;
     while (table->next())   if (table->value(3).toString() == newPassword) { lpID = table->value(1).toInt(); break; }
     if (lpID != -1) return;
@@ -82,24 +72,27 @@ void LP::changeLP_2()
 void LP::delPrevLP()
 {
     QSqlQuery qPrevLpID(*db);
-    qPrevLpID.exec(QString("SELECT TabLoginPassword_idTabLoginPassword FROM tabaccessrights "
-                           "WHERE TabLoginPassword_idTabLoginPassword = %1;").arg(QString::number(prevLpID)));
+    if(!qPrevLpID.exec(QString("SELECT TabLoginPassword_idTabLoginPassword FROM tabaccessrights "
+                               "WHERE TabLoginPassword_idTabLoginPassword = %1;").arg(QString::number(prevLpID))))
+        throw QString("Select lp 1: " + qPrevLpID.lastError().text());
     if (qPrevLpID.size() >= 1) return;
-    qPrevLpID.exec(QString("DELETE FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(prevLpID)));
+    if(!qPrevLpID.exec(QString("DELETE FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(prevLpID))))
+        throw QString("DELETE FROM lp 0: " + qPrevLpID.lastError().text());
 }
 
 void LP::checkTemplate()
 {
     int i=1;
     if (i=1) return;
-    else if (i=2)  throw QString("Слишком простой логин");
-    else if (i=3)  throw QString("Слишком простой пароль");
+    else if (i=2)  throw lpException(tr("Слишком простой логин"));
+    else if (i=3)  throw lpException(tr("Слишком простой пароль"));
 }
 
 void LP::createNewLP()
 {
     QSqlQuery newLP(*db);
-    newLP.exec(QString("INSERT INTO tabloginpassword (login, password) VALUES ('%1', '%2');").arg(newLogin, newPassword));
+    if(!newLP.exec(QString("INSERT INTO tabloginpassword (login, password) VALUES ('%1', '%2');").arg(newLogin, newPassword)))
+        throw QString("INSERT INTO lp 0: " + newLP.lastError().text());
     lpID = newLP.lastInsertId().toInt();
 //    qDebug() << "last id: " + QString::number(newLP.lastInsertId().toInt());
 }

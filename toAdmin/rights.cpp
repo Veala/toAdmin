@@ -63,7 +63,7 @@ void Rights::init(int Key, QString uName)
 {
     uKey = Key;
     tmRights->setFilter("TabUsers_idTabUsers = " + QString::number(uKey));
-    if(!tmRights->select()) throw criticalExc("tmRights->select() 1: " + tmRights->lastError().text()); //верно - throw уходит дальше
+    if(!tmRights->select()) throw QString("tmRights->select() 1: " + tmRights->lastError().text()); //верно - throw уходит дальше
     setWindowTitle(tr("Права доступа пользователя: ") + uName);
     show();
 }
@@ -80,11 +80,11 @@ void Rights::addRights()
         QSqlQuery typeProductsQuery(tmRights->database());
         QSqlQuery authorityKindsQuery(tmRights->database());
         if (!testKindsQuery.exec("SELECT * FROM tabtestkinds;"))
-            throw criticalExc("Select 1r: " + testKindsQuery.lastError().text());
+            throw QString("Select 1r: " + testKindsQuery.lastError().text());
         if (!typeProductsQuery.exec("SELECT * FROM tabtypeproducts;"))
-            throw criticalExc("Select 2r: " + typeProductsQuery.lastError().text());
+            throw QString("Select 2r: " + typeProductsQuery.lastError().text());
         if (!authorityKindsQuery.exec("SELECT * FROM tabauthoritykinds;"))
-            throw criticalExc("Select 3r: " + authorityKindsQuery.lastError().text());
+            throw QString("Select 3r: " + authorityKindsQuery.lastError().text());
         QStringList nameTestKinds, nameTypeProducts, nameAuthorityKinds;
         QVector<int> idTestKinds, idTypeProducts, idAuthorityKinds;
         for (int i=0; i<testKindsQuery.size(); i++) { testKindsQuery.next(); nameTestKinds.append(testKindsQuery.value(1).toString()); idTestKinds.append(testKindsQuery.value(0).toInt()); }
@@ -111,12 +111,15 @@ void Rights::addRights()
         rec.setValue(4, uKey);
         rec.setValue(5, idAuthorityKinds.at(rDialog.data.at(4).toInt()));
 
-        if(!tmRights->insertRecord(-1,rec)) throw criticalExc("Insert 0: tmRights->insertRecord(-1,rec)");
-        if(!tmRights->select()) throw criticalExc("tmRights->select() 1: " + tmRights->lastError().text());
+        if(!tmRights->insertRecord(-1,rec)) throw QString("Insert 0: tmRights->insertRecord(-1,rec)");
+        if(!tmRights->select()) throw QString("tmRights->select() 1: " + tmRights->lastError().text());
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка при добавлении"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
 
@@ -134,7 +137,7 @@ void Rights::logPas()
 
         QSqlQuery qlp(tmRights->database());
         if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey))))
-            throw criticalExc("Select logPas 1: " + qlp.lastError().text());
+            throw QString("Select logPas 1: " + qlp.lastError().text());
         qlp.next();
 
         lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), tmRights->database());
@@ -144,15 +147,18 @@ void Rights::logPas()
         lpdialog.rID = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
 
         if (lpdialog.exec()) {
-            if(!tmRights->select()) throw criticalExc("Select logPas 2: " + tmRights->lastError().text());
+            if(!tmRights->select()) throw QString("Select logPas 2: " + tmRights->lastError().text());
             ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
         } else {
             ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);
             return;
         }
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
 
@@ -168,16 +174,19 @@ void Rights::delRights()
 
         int lpID = rowsList.at(0).data().toInt();
 
-        if (!tmRights->removeRow(rowsList.at(0).row())) throw criticalExc("Remove 0: tmRights->removeRow(rowsList.at(0).row())");
+        if (!tmRights->removeRow(rowsList.at(0).row())) throw QString("Remove 0: tmRights->removeRow(rowsList.at(0).row())");
 
         LP lp(0, tmRights->database(), "", "", 0);
         lp.prevLpID = lpID;
         lp.delPrevLP();
 
-        if (!tmRights->select()) throw criticalExc("Select logPas 3: " + tmRights->lastError().text());
+        if (!tmRights->select()) throw QString("Select logPas 3: " + tmRights->lastError().text());
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка удаления прав"), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка удаления прав"), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка удаления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }

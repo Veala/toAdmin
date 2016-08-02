@@ -41,14 +41,17 @@ void lpDialog::clickOK(bool b)
             QSqlQuery update(*db);
             if(!update.exec(QString("UPDATE tabaccessrights SET TabLoginPassword_idTabLoginPassword = %1 "
                                     "WHERE idtabaccessrights = %2;").arg(QString::number(lp.lpID), QString::number(rID))))
-                throw criticalExc("Update 1: " + update.lastError().text());
+                throw QString("Update 1: " + update.lastError().text());
             lp.delPrevLP();
             accept();
         } else {
             messageBox.warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
         }
     }
-    catch (const criticalExc& exc) {
-        messageBox.warning(this, tr("Ошибка изменения \"логин-пароль\""), exc);
+    catch (const QString& error) {
+        messageBox.warning(this, tr("Ошибка изменения \"логин-пароль\""), error);
+    }
+    catch (...) {
+        messageBox.warning(this, tr("Ошибка изменения \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
