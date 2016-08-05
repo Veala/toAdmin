@@ -80,6 +80,9 @@ void Admin::addUser()
         if(!tmUsers->insertRecord(-1,rec)) throw QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
         if(!tmUsers->select()) throw QString("tmUsers->select() 1: " + tmUsers->lastError().text());
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
+        QSqlQuery rollback(tmUsers->database());
+        qDebug() << rollback.exec("ROLLBACK;");
+        qDebug() << rollback.lastError().text();
     }
     catch (const QString& error) {
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
