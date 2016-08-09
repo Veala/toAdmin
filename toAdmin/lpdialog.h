@@ -11,18 +11,18 @@ namespace Ui {
 class lpDialog;
 }
 
-class lpDialog : public QDialog
+class lpDialog : public QDialog, public Transaction
 {
     Q_OBJECT
 
 public:
     explicit lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDatabase &database);
     ~lpDialog();
+
     const QSqlDatabase *db;
     int uID, lpID, rID;
     QString currentL, currentP;
     QMessageBox messageBox;
-    //QString message;
 
 public slots:
     void clickOK(bool);

@@ -14,6 +14,7 @@ class userDialog : public QDialog
 public:
     explicit userDialog(QWidget *parent = 0);
     ~userDialog();
+
     QStringList data;
     int flat;
 

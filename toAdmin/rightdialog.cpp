@@ -2,7 +2,7 @@
 #include "ui_rightdialog.h"
 
 rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, const QSqlDatabase &database) :
-    QDialog(parent),
+    QDialog(parent), Transaction(database),
     ui(new Ui::rightDialog)
 {
     ui->setupUi(this);
@@ -27,14 +27,17 @@ rightDialog::~rightDialog()
 void rightDialog::clickOK(bool b)
 {
     try {
+begin();
         QString login    = ui->lineEdit->text();
         QString password = ui->lineEdit_2->text();
         LP lp(0, *db, login, password, uKey);
         lp.init("newRight();");
         if (lp.error == "Ok") {
             lpID = lp.lpID;
+commit();
             accept();
         } else {
+commit();
             messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
         }
     }

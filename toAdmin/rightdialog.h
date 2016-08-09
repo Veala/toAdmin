@@ -11,7 +11,7 @@ namespace Ui {
 class rightDialog;
 }
 
-class rightDialog : public QDialog
+class rightDialog : public QDialog, public Transaction
 {
     Q_OBJECT
 

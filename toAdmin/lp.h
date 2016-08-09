@@ -5,6 +5,7 @@
 #include <QtSql>
 #include <QTableView>
 #include <QMessageBox>
+#include "transaction.h"
 
 class lpException {
 
@@ -19,11 +20,9 @@ class LP : public QObject
 public:
     explicit LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid);
     ~LP();
-    QString newLogin;
-    QString newPassword;
-    int userId;
-    int lpID;
-    int prevLpID;
+
+    QString newLogin, newPassword;
+    int userId, lpID, prevLpID;
     const QSqlDatabase *db;
     QSqlQuery *table;
     QMap<QString, int> mType;

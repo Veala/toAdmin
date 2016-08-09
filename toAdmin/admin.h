@@ -12,7 +12,7 @@ namespace Ui {
 class Admin;
 }
 
-class Admin : public QMainWindow
+class Admin : public QMainWindow, public Transaction
 {
     Q_OBJECT
 

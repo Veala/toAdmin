@@ -16,14 +16,16 @@ SOURCES +=  $$PWD/admin.cpp \
     $$PWD/userdialog.cpp \
     $$PWD/rightdialog.cpp \
     $$PWD/lp.cpp \
-    $$PWD/lpdialog.cpp
+    $$PWD/lpdialog.cpp \
+    $$PWD/transaction.cpp
 
 HEADERS  += $$PWD/admin.h \
             $$PWD/rights.h \
     $$PWD/userdialog.h \
     $$PWD/rightdialog.h \
     $$PWD/lp.h \
-    $$PWD/lpdialog.h
+    $$PWD/lpdialog.h \
+    $$PWD/transaction.h
 
 FORMS    += $$PWD/admin.ui \
             $$PWD/rights.ui \
