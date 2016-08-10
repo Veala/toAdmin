@@ -27,17 +27,14 @@ rightDialog::~rightDialog()
 void rightDialog::clickOK(bool b)
 {
     try {
-begin();
         QString login    = ui->lineEdit->text();
         QString password = ui->lineEdit_2->text();
         LP lp(0, *db, login, password, uKey);
         lp.init("newRight();");
         if (lp.error == "Ok") {
             lpID = lp.lpID;
-commit();
             accept();
         } else {
-commit();
             messageBox.warning(this, tr("Добавление права пользователя"), tr("Ошибка: ") + lp.error);
         }
     }

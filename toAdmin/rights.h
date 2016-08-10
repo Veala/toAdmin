@@ -13,7 +13,7 @@ namespace Ui {
 class Rights;
 }
 
-class Rights : public QMainWindow
+class Rights : public QMainWindow, public Transaction
 {
     Q_OBJECT
 

@@ -10,7 +10,8 @@ public:
     ~Transaction();
     void begin();
     void commit();
-    QSqlQuery *begin, *commit;
+    void rollback();
+    QSqlQuery *begin, *commit, *rollback;
 };
 
 #endif // TRANSACTION_H

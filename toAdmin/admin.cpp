@@ -84,9 +84,11 @@ commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
     catch (const QString& error) {
+rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
     }
     catch (...) {
+rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -119,6 +121,7 @@ begin();
             lp.prevLpID = lpQuery.value(0).toInt();
             lp.delPrevLP();
         }
+        //-----------------------------------------------?????????????????????????----------------------------------------
         bool b = tmUsers->removeRow(rowsList.at(0).row());
         if(!tmUsers->select()) throw QString("tmUsers->select() 2: " + tmUsers->lastError().text());
 commit();
@@ -126,9 +129,11 @@ commit();
         else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
     catch (const QString& error) {
+rollback();
         messageBox.warning(this, tr("Ошибка при удалении"), error);
     }
     catch (...) {
+rollback();
         messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -150,9 +155,11 @@ begin();
 commit();
     }
     catch (const QString& error) {
+rollback();
         messageBox.warning(this, tr("Ошибка прав доступа"), error);
     }
     catch (...) {
+rollback();
         messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
