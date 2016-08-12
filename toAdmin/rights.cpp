@@ -118,9 +118,14 @@ rollback();
 commit();
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
-    catch (const QString& error) {  rollback(); messageBox.warning(this, tr("Ошибка при добавлении"), error);   }
-    catch (const QString& error) {  rollback(); messageBox.warning(this, tr("Ошибка при добавлении"), error);   }
-    catch (...) {   rollback(); messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже")); }
+    catch (const QString& error) {
+//rollback();
+        messageBox.warning(this, tr("Ошибка при добавлении"), error);
+    }
+    catch (...) {
+//rollback();
+        messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+    }
 }
 
 void Rights::logPas()
@@ -157,11 +162,11 @@ rollback();
         }
     }
     catch (const QString& error) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error);
     }
     catch (...) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -189,11 +194,11 @@ commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
     catch (const QString& error) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка удаления прав"), error);
     }
     catch (...) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка удаления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
