@@ -11,6 +11,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
 
     tmUsers = new QSqlTableModel(this,  db);
     rights = new Rights(this,  db);
+begin();
     tmUsers->setEditStrategy(QSqlTableModel::OnFieldChange);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -56,6 +57,8 @@ Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
 
 Admin::~Admin()
 {
+//rollback();
+commit();
     delete ui;
 }
 
@@ -72,7 +75,7 @@ void Admin::addUser()
             ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
             return;
         }
-begin();
+//begin();
         QSqlRecord rec(tmUsers->record());
         //rec.setValue(0, lastKeyUser+1);
         for (int i=1; i<rec.count() - 1; i++)
@@ -80,15 +83,15 @@ begin();
         rec.setValue(8, uDialog.flat);
         if(!tmUsers->insertRecord(-1,rec)) throw QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
         if(!tmUsers->select()) throw QString("tmUsers->select() 1: " + tmUsers->lastError().text());
-commit();
+//commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
     catch (const QString& error) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
     }
     catch (...) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -104,7 +107,7 @@ void Admin::delUser()
         QString family = rowsList.at(0).data().toString();
         int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
         if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
-begin();
+//begin();
         QSqlQuery lpQuery(tmUsers->database());
         if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
@@ -124,16 +127,16 @@ begin();
         //-----------------------------------------------?????????????????????????----------------------------------------
         bool b = tmUsers->removeRow(rowsList.at(0).row());
         if(!tmUsers->select()) throw QString("tmUsers->select() 2: " + tmUsers->lastError().text());
-commit();
+//commit();
         if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
         else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
     catch (const QString& error) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка при удалении"), error);
     }
     catch (...) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -150,16 +153,16 @@ void Admin::accessRights()
         QString uName = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString() + " " +
                 ui->tableView->selectionModel()->selectedRows(2).at(0).data().toString() + " " +
                 ui->tableView->selectionModel()->selectedRows(3).at(0).data().toString();
-begin();
+//begin();
         rights->init(uKey, uName);
-commit();
+//commit();
     }
     catch (const QString& error) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка прав доступа"), error);
     }
     catch (...) {
-rollback();
+//rollback();
         messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }

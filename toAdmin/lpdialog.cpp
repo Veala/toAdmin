@@ -25,7 +25,7 @@ lpDialog::~lpDialog()
 void lpDialog::clickOK(bool b)
 {
     try {
-begin();
+//begin();
         QString login    = ui->lineEdit->text();
         QString password = ui->lineEdit_2->text();
         LP lp(0, *db, login, password, uID);
@@ -43,10 +43,10 @@ begin();
                                     "WHERE idtabaccessrights = %2;").arg(QString::number(lp.lpID), QString::number(rID))))
                 throw QString("Update 1: " + update.lastError().text());
             lp.delPrevLP();
-commit();
+//commit();
             accept();
         } else {
-commit();
+//commit();
             messageBox.warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
         }
     }

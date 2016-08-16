@@ -76,7 +76,7 @@ void Rights::sorting(int column, Qt::SortOrder sortOrder)
 void Rights::addRights()
 {
     try {
-begin();
+//begin();
         QSqlQuery testKindsQuery(tmRights->database());
         QSqlQuery typeProductsQuery(tmRights->database());
         QSqlQuery authorityKindsQuery(tmRights->database());
@@ -96,8 +96,8 @@ begin();
 
         rightDialog rDialog(0, list, uKey, tmRights->database());
         if (!rDialog.exec()) {
-rollback();
-            ui->statusbar->showMessage("Отмена добавления пользователя", 5000);
+//rollback();
+            ui->statusbar->showMessage("Отмена добавления права", 5000);
             return;
         }
 
@@ -115,15 +115,15 @@ rollback();
 
         if(!tmRights->insertRecord(-1,rec)) throw QString("Insert 0: tmRights->insertRecord(-1,rec)");
         if(!tmRights->select()) throw QString("tmRights->select() 1: " + tmRights->lastError().text());
-commit();
+//commit();
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
     catch (const QString& error) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
     }
     catch (...) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -139,7 +139,7 @@ void Rights::logPas()
         int lpKey = rowsList.at(0).data().toInt();
         //qDebug() << "lpKey:" << lpKey;
         QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
-begin();
+//begin();
         QSqlQuery qlp(tmRights->database());
         if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey))))
             throw QString("Select logPas 1: " + qlp.lastError().text());
@@ -153,20 +153,20 @@ begin();
 
         if (lpdialog.exec()) {
             if(!tmRights->select()) throw QString("Select logPas 2: " + tmRights->lastError().text());
-commit();
+//commit();
             ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
         } else {
-rollback();
+//rollback();
             ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);
             return;
         }
     }
     catch (const QString& error) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error);
     }
     catch (...) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -182,7 +182,7 @@ void Rights::delRights()
         if (QMessageBox::No == messageBox.question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) return;
 
         int lpID = rowsList.at(0).data().toInt();
-begin();
+//begin();
         if (!tmRights->removeRow(rowsList.at(0).row())) throw QString("Remove 0: tmRights->removeRow(rowsList.at(0).row())");
 
         LP lp(0, tmRights->database(), "", "", 0);
@@ -190,15 +190,15 @@ begin();
         lp.delPrevLP();
 
         if (!tmRights->select()) throw QString("Select logPas 3: " + tmRights->lastError().text());
-commit();
+//commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
     catch (const QString& error) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка удаления прав"), error);
     }
     catch (...) {
-//rollback();
+//--rollback();
         messageBox.warning(this, tr("Ошибка удаления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
