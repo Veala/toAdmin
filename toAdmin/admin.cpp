@@ -1,17 +1,17 @@
 #include "admin.h"
 #include "ui_admin.h"
 
-Admin::Admin(QWidget *parent, QSqlDatabase  &db) :
-    QMainWindow(parent), Transaction(db),
+Admin::Admin(QWidget *parent, QSqlDatabase &database) :
+    QMainWindow(parent), Transaction(database),
     ui(new Ui::Admin)
 {
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/img/img.png"));
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
-    tmUsers = new QSqlTableModel(this,  db);
-    rights = new Rights(this,  db);
-begin();
+    tmUsers = new QSqlTableModel(this,  *db);
+    rights = new Rights(this,  *db);
+
     tmUsers->setEditStrategy(QSqlTableModel::OnFieldChange);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -57,8 +57,6 @@ begin();
 
 Admin::~Admin()
 {
-//rollback();
-commit();
     delete ui;
 }
 
@@ -108,18 +106,18 @@ void Admin::delUser()
         int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
         if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
 //begin();
-        QSqlQuery lpQuery(tmUsers->database());
+        QSqlQuery lpQuery(*db);
         if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
             throw QString("Select 1u: " + lpQuery.lastError().text());
         }
-        QSqlQuery delQuery(tmUsers->database());
+        QSqlQuery delQuery(*db);
         if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
             throw QString("Select 2u: " + delQuery.lastError().text());
         }
 
-        LP lp(0, tmUsers->database(), "", "", 0);
+        LP lp(0, *db, "", "", 0);
         while (lpQuery.next()) {
             lp.prevLpID = lpQuery.value(0).toInt();
             lp.delPrevLP();

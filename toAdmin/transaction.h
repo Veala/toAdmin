@@ -3,22 +3,25 @@
 
 #include <QtSql>
 
-class rollBackException
+class trException
 {
 public:
-    explicit rollBackException(const QString &str);
+    explicit trException(const QString &tp, const QString &str);
+    QString type;
     QString data;
 };
 
 class Transaction
 {
 public:
-    Transaction(const QSqlDatabase &db);
+    Transaction(QSqlDatabase &database);
     ~Transaction();
-    QSqlQuery *qBegin, *qCommit, *qRollback;
+
+    QSqlDatabase *db;
+    //QSqlQuery *qBegin, *qCommit, *qRollback;
     void begin();
     void commit();
-    void rollback();
+    void rollback(QString);
 };
 
 #endif // TRANSACTION_H

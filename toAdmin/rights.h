@@ -18,7 +18,7 @@ class Rights : public QMainWindow, public Transaction
     Q_OBJECT
 
 public:
-    explicit Rights(QWidget *parent, QSqlDatabase &db);
+    explicit Rights(QWidget *parent, QSqlDatabase &database);
     ~Rights();
 
     QSqlRelationalTableModel *tmRights;

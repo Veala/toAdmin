@@ -17,7 +17,7 @@ class Admin : public QMainWindow, public Transaction
     Q_OBJECT
 
 public:
-    explicit Admin(QWidget *parent, QSqlDatabase &db);
+    explicit Admin(QWidget *parent, QSqlDatabase &database);
     ~Admin();
 
     QSqlTableModel *tmUsers;

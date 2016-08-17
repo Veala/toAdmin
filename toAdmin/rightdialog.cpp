@@ -1,7 +1,7 @@
 #include "rightdialog.h"
 #include "ui_rightdialog.h"
 
-rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, const QSqlDatabase &database) :
+rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, QSqlDatabase &database) :
     QDialog(parent), Transaction(database),
     ui(new Ui::rightDialog)
 {
@@ -15,7 +15,6 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     connect(this, SIGNAL(accepted()), this, SLOT(setData()));
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    db = &database;
     uKey = Key;
 }
 

@@ -1,7 +1,7 @@
 #include "lpdialog.h"
 #include "ui_lpdialog.h"
 
-lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDatabase &database) :
+lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &database) :
     QDialog(parent), Transaction(database),
     ui(new Ui::lpDialog)
 {
@@ -10,7 +10,6 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, const QSqlDataba
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    db = &database;
     currentL = curL;
     currentP = curP;
     ui->lineEdit->setText(currentL);

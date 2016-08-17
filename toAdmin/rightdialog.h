@@ -16,10 +16,10 @@ class rightDialog : public QDialog, public Transaction
     Q_OBJECT
 
 public:
-    explicit rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, const QSqlDatabase &database);
+    explicit rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, QSqlDatabase &database);
     ~rightDialog();
+
     QStringList data;
-    const QSqlDatabase *db;
     int uKey, lpID;
     QMessageBox messageBox;
 

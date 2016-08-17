@@ -5,10 +5,10 @@ lpException::lpException(const QString &str)
     data = str;
 }
 
-LP::LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid) : QObject(parent)
+LP::LP(QObject *parent, QSqlDatabase &database, QString l, QString p, int uid) : QObject(parent)
 {
     userId = uid;   newLogin = l;   newPassword = p;
-    db = &dtb;  table = new QSqlQuery(*db);
+    db = &database;  table = new QSqlQuery(*db);
     mType["newRight();"] = 1;   mType["changeLP_1();"] = 2; mType["changeLP_2();"] = 3;
 }
 

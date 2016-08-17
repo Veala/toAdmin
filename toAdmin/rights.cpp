@@ -1,8 +1,8 @@
 #include "rights.h"
 #include "ui_rights.h"
 
-Rights::Rights(QWidget *parent, QSqlDatabase &db) :
-    QMainWindow(parent), Transaction(db),
+Rights::Rights(QWidget *parent, QSqlDatabase &database) :
+    QMainWindow(parent), Transaction(database),
     ui(new Ui::Rights)
 {
     ui->setupUi(this);
@@ -10,7 +10,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &db) :
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
     //---------------------------------------access rights---------------------------
-    tmRights = new QSqlRelationalTableModel(this, db);
+    tmRights = new QSqlRelationalTableModel(this, *db);
 
     tmRights->setEditStrategy(QSqlTableModel::OnFieldChange);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -77,9 +77,9 @@ void Rights::addRights()
 {
     try {
 //begin();
-        QSqlQuery testKindsQuery(tmRights->database());
-        QSqlQuery typeProductsQuery(tmRights->database());
-        QSqlQuery authorityKindsQuery(tmRights->database());
+        QSqlQuery testKindsQuery(*db);
+        QSqlQuery typeProductsQuery(*db);
+        QSqlQuery authorityKindsQuery(*db);
         if (!testKindsQuery.exec("SELECT * FROM tabtestkinds;"))
             throw QString("Select 1r: " + testKindsQuery.lastError().text());
         if (!typeProductsQuery.exec("SELECT * FROM tabtypeproducts;"))
@@ -94,7 +94,7 @@ void Rights::addRights()
         QVector<QStringList> list;
         list.append(nameTestKinds); list.append(nameTypeProducts); list.append(nameAuthorityKinds);
 
-        rightDialog rDialog(0, list, uKey, tmRights->database());
+        rightDialog rDialog(0, list, uKey, *db);
         if (!rDialog.exec()) {
 //rollback();
             ui->statusbar->showMessage("Отмена добавления права", 5000);
@@ -140,12 +140,12 @@ void Rights::logPas()
         //qDebug() << "lpKey:" << lpKey;
         QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
 //begin();
-        QSqlQuery qlp(tmRights->database());
+        QSqlQuery qlp(*db);
         if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey))))
             throw QString("Select logPas 1: " + qlp.lastError().text());
         qlp.next();
 
-        lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), tmRights->database());
+        lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), *db);
         lpdialog.setWindowTitle(numStr);
         lpdialog.lpID = lpKey;
         lpdialog.uID = ui->tableView->selectionModel()->selectedRows(4).at(0).data().toInt();
@@ -185,7 +185,7 @@ void Rights::delRights()
 //begin();
         if (!tmRights->removeRow(rowsList.at(0).row())) throw QString("Remove 0: tmRights->removeRow(rowsList.at(0).row())");
 
-        LP lp(0, tmRights->database(), "", "", 0);
+        LP lp(0, *db, "", "", 0);
         lp.prevLpID = lpID;
         lp.delPrevLP();
 

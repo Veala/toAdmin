@@ -18,12 +18,12 @@ class LP : public QObject
 {
     Q_OBJECT
 public:
-    explicit LP(QObject *parent, const QSqlDatabase &dtb, QString l, QString p, int uid);
+    explicit LP(QObject *parent, QSqlDatabase &database, QString l, QString p, int uid);
     ~LP();
 
+    const QSqlDatabase *db;
     QString newLogin, newPassword;
     int userId, lpID, prevLpID;
-    const QSqlDatabase *db;
     QSqlQuery *table;
     QMap<QString, int> mType;
 

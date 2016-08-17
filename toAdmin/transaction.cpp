@@ -1,35 +1,38 @@
 #include "transaction.h"
 
-rollBackException::rollBackException(const QString &str)
+trException::trException(const QString &tp, const QString &str)
 {
-    data = str;
+    type = tp;  data = str;
 }
 
-Transaction::Transaction(const QSqlDatabase &db)
+Transaction::Transaction(QSqlDatabase &database)
 {
-    qBegin = new QSqlQuery(db);      qBegin->prepare(QString("BEGIN;"));
-    qCommit = new QSqlQuery(db);     qCommit->prepare(QString("COMMIT;"));
-    qRollback = new QSqlQuery(db);   qRollback->prepare(QString("ROLLBACK;"));
+    db = &database;
+    //tx_isolation | REPEATABLE-READ
+    //
+//    qBegin = new QSqlQuery(db);      qBegin->prepare(QString("BEGIN;"));
+//    qCommit = new QSqlQuery(db);     qCommit->prepare(QString("COMMIT;"));
+//    qRollback = new QSqlQuery(db);   qRollback->prepare(QString("ROLLBACK;"));
 }
 
 Transaction::~Transaction()
 {
-    delete qBegin;
-    delete qCommit;
-    delete qRollback;
+//    delete qBegin;
+//    delete qCommit;
+//    delete qRollback;
 }
 
 void Transaction::begin()
 {
-    if (!qBegin->exec()) throw QString("BEGIN: " + qBegin->lastError().text());
+    if (!db->transaction()) throw QString("BEGIN: " + db->lastError().text());
 }
 
 void Transaction::commit()
 {
-    if (!qCommit->exec()) throw QString("COMMIT: " + qCommit->lastError().text());
+    if (!db->commit()) throw QString("COMMIT: " + db->lastError().text());
 }
 
-void Transaction::rollback()
+void Transaction::rollback(QString error)
 {
-    if (!qRollback->exec()) throw rollBackException("ROLLBACK: " + qRollback->lastError().text());
+    if (!db->rollback()) throw trException(error, "ROLLBACK: " + db->lastError().text());
 }
