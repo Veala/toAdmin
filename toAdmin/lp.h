@@ -14,14 +14,13 @@ public:
     QString data;
 };
 
-class LP : public QObject
+class LP : public QObject, public Transaction
 {
     Q_OBJECT
 public:
     explicit LP(QObject *parent, QSqlDatabase &database, QString l, QString p, int uid);
     ~LP();
 
-    const QSqlDatabase *db;
     QString newLogin, newPassword;
     int userId, lpID, prevLpID;
     QSqlQuery *table;

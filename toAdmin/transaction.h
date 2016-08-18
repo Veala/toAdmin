@@ -3,11 +3,17 @@
 
 #include <QtSql>
 
+enum typeError{
+    BEGIN, ROLLBACKOK, ROLLBACKERR,
+
+    PROGRAMMERROR, OTHER
+};
+
 class trException
 {
 public:
-    explicit trException(const QString &tp, const QString &str);
-    QString type;
+    explicit trException(typeError &tp, const QString &str);
+    typeError type;
     QString data;
 };
 

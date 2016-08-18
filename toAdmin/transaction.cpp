@@ -1,6 +1,6 @@
 #include "transaction.h"
 
-trException::trException(const QString &tp, const QString &str)
+trException::trException(typeError &tp, QString &str)
 {
     type = tp;  data = str;
 }
@@ -24,15 +24,16 @@ Transaction::~Transaction()
 
 void Transaction::begin()
 {
-    if (!db->transaction()) throw QString("BEGIN: " + db->lastError().text());
+    if (!db->transaction()) throw trException(BEGIN, "BEGIN error: " + db->lastError().text());
 }
 
 void Transaction::commit()
 {
-    if (!db->commit()) throw QString("COMMIT: " + db->lastError().text());
+    if (!db->commit())  rollback(QString("COMMIT error: " + db->lastError().text()));
 }
 
 void Transaction::rollback(QString error)
 {
-    if (!db->rollback()) throw trException(error, "ROLLBACK: " + db->lastError().text());
+    if (!db->rollback())                        throw trException(ROLLBACKERR,  error + "\n" + "ROLLBACK error: " + db->lastError().text());
+    else if (error != "standard situation")     throw trException(ROLLBACKOK,   error + "\n" + "ROLLBACK: OK");
 }

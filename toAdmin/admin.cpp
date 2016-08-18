@@ -73,23 +73,21 @@ void Admin::addUser()
             ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
             return;
         }
-//begin();
+begin();
         QSqlRecord rec(tmUsers->record());
         //rec.setValue(0, lastKeyUser+1);
         for (int i=1; i<rec.count() - 1; i++)
             rec.setValue(i, uDialog.data.at(i-1));
         rec.setValue(8, uDialog.flat);
-        if(!tmUsers->insertRecord(-1,rec)) throw QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text());
-        if(!tmUsers->select()) throw QString("tmUsers->select() 1: " + tmUsers->lastError().text());
-//commit();
+        if(!tmUsers->insertRecord(-1,rec)) rollback(QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text()));
+        if(!tmUsers->select()) rollback(QString("tmUsers->select() 1: " + tmUsers->lastError().text()));
+commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
-    catch (const QString& error) {
-//rollback();
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
     }
     catch (...) {
-//rollback();
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -105,16 +103,16 @@ void Admin::delUser()
         QString family = rowsList.at(0).data().toString();
         int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
         if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
-//begin();
+begin();
         QSqlQuery lpQuery(*db);
         if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + lpQuery.lastError().text());
-            throw QString("Select 1u: " + lpQuery.lastError().text());
+            rollback(QString("Select 1u: " + lpQuery.lastError().text()));
         }
         QSqlQuery delQuery(*db);
         if (!delQuery.exec("DELETE FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
             ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
-            throw QString("Select 2u: " + delQuery.lastError().text());
+            rollback(QString("Select 2u: " + delQuery.lastError().text()));
         }
 
         LP lp(0, *db, "", "", 0);
@@ -124,17 +122,15 @@ void Admin::delUser()
         }
         //-----------------------------------------------?????????????????????????----------------------------------------
         bool b = tmUsers->removeRow(rowsList.at(0).row());
-        if(!tmUsers->select()) throw QString("tmUsers->select() 2: " + tmUsers->lastError().text());
-//commit();
+        if(!tmUsers->select()) rollback(QString("tmUsers->select() 2: " + tmUsers->lastError().text()));
+commit();
         if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
         else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
-    catch (const QString& error) {
-//rollback();
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка при удалении"), error);
     }
     catch (...) {
-//rollback();
         messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
@@ -151,16 +147,14 @@ void Admin::accessRights()
         QString uName = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString() + " " +
                 ui->tableView->selectionModel()->selectedRows(2).at(0).data().toString() + " " +
                 ui->tableView->selectionModel()->selectedRows(3).at(0).data().toString();
-//begin();
+begin();
         rights->init(uKey, uName);
-//commit();
+commit();
     }
-    catch (const QString& error) {
-//rollback();
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка прав доступа"), error);
     }
     catch (...) {
-//rollback();
         messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));
     }
 }
