@@ -40,7 +40,7 @@ void LP::setup()
     if(!table->exec(QString("SELECT first.tabusers_idtabusers, first.TabLoginpassword_idtabloginpassword, second.login, second.password "
                             "FROM tabaccessrights first, tabloginpassword second "
                             "WHERE first.tabloginpassword_idtabloginpassword = second.idtabloginpassword "
-                            "AND second.login = \"%1\";").arg(newLogin))) throw QString("Select lp 0: " + table->lastError().text());
+                            "AND second.login = \"%1\";").arg(newLogin))) rollback(QString("Select lp 0: " + table->lastError().text()));
     checkTemplate();
 }
 
@@ -74,10 +74,10 @@ void LP::delPrevLP()
     QSqlQuery qPrevLpID(*db);
     if(!qPrevLpID.exec(QString("SELECT TabLoginPassword_idTabLoginPassword FROM tabaccessrights "
                                "WHERE TabLoginPassword_idTabLoginPassword = %1;").arg(QString::number(prevLpID))))
-        throw QString("Select lp 1: " + qPrevLpID.lastError().text());
+        rollback(QString("Select lp 1: " + qPrevLpID.lastError().text()));
     if (qPrevLpID.size() >= 1) return;
     if(!qPrevLpID.exec(QString("DELETE FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(prevLpID))))
-        throw QString("DELETE FROM lp 0: " + qPrevLpID.lastError().text());
+        rollback(QString("DELETE FROM lp 0: " + qPrevLpID.lastError().text()));
 }
 
 void LP::checkTemplate()
@@ -92,7 +92,7 @@ void LP::createNewLP()
 {
     QSqlQuery newLP(*db);
     if(!newLP.exec(QString("INSERT INTO tabloginpassword (login, password) VALUES ('%1', '%2');").arg(newLogin, newPassword)))
-        throw QString("INSERT INTO lp 0: " + newLP.lastError().text());
+        rollback(QString("INSERT INTO lp 0: " + newLP.lastError().text()));
     lpID = newLP.lastInsertId().toInt();
 //    qDebug() << "last id: " + QString::number(newLP.lastInsertId().toInt());
 }

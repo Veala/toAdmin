@@ -118,7 +118,7 @@ rollback(QString("standard situation"));
 commit();
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
-    catch (const QString& error) {
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка при добавлении"), error);
     }
     catch (...) {
@@ -159,7 +159,7 @@ rollback(QString("standard situation"));
             return;
         }
     }
-    catch (const QString& error) {
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error);
     }
     catch (...) {
@@ -179,17 +179,17 @@ void Rights::delRights()
 
         int lpID = rowsList.at(0).data().toInt();
 begin();
-        if (!tmRights->removeRow(rowsList.at(0).row())) rollback(QString("Remove 0: tmRights->removeRow(rowsList.at(0).row())"));
+        if (!tmRights->removeRow(rowsList.at(0).row())) rollback(QString("Error: tmRights->removeRow(rowsList.at(0).row()): " + tmRights->lastError().text()));
 
         LP lp(0, *db, "", "", 0);
         lp.prevLpID = lpID;
         lp.delPrevLP();
 
-        if (!tmRights->select()) rollback(QString("Select logPas 3: " + tmRights->lastError().text()));
+        if (!tmRights->select()) rollback(QString("Error: Select logPas 3: " + tmRights->lastError().text()));
 commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
-    catch (const QString& error) {
+    catch (const trException& error) {
         messageBox.warning(this, tr("Ошибка удаления прав"), error);
     }
     catch (...) {
