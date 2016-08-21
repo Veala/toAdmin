@@ -1,30 +1,14 @@
 #include "transaction.h"
 
-trException::trException(typeError &tp, QString &str)
-{
-    type = tp;  data = str;
-}
-
 Transaction::Transaction(QSqlDatabase &database)
 {
     db = &database;
     //tx_isolation | REPEATABLE-READ
-    //
-//    qBegin = new QSqlQuery(db);      qBegin->prepare(QString("BEGIN;"));
-//    qCommit = new QSqlQuery(db);     qCommit->prepare(QString("COMMIT;"));
-//    qRollback = new QSqlQuery(db);   qRollback->prepare(QString("ROLLBACK;"));
-}
-
-Transaction::~Transaction()
-{
-//    delete qBegin;
-//    delete qCommit;
-//    delete qRollback;
 }
 
 void Transaction::begin()
 {
-    if (!db->transaction()) throw trException(BEGIN, "BEGIN error: " + db->lastError().text());
+    if (!db->transaction()) throw trException(BEGIN_ERR, "BEGIN error: " + db->lastError().text());
 }
 
 void Transaction::commit()
@@ -34,6 +18,17 @@ void Transaction::commit()
 
 void Transaction::rollback(QString error)
 {
-    if (!db->rollback())                        throw trException(ROLLBACKERR,  error + "\n" + "ROLLBACK error: " + db->lastError().text());
-    else if (error != "standard situation")     throw trException(ROLLBACKOK,   error + "\n" + "ROLLBACK: OK");
+    if (!db->rollback())                        throw trException(ROLLBACK_CRITICAL_ERR,  error + "\n" + "ROLLBACK error: " + db->lastError().text());
+    else if (error != "standard situation")     throw trException(ROLLBACK_OK_ERR,   error + "\n" + "ROLLBACK: OK");
+}
+
+
+Transaction::trException::trException()
+{
+    type = NO_ERR;  data = "";
+}
+
+Transaction::trException::trException(typeError tp, QString str)
+{
+    type = tp;  data = str;
 }

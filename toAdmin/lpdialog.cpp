@@ -47,9 +47,12 @@ void lpDialog::clickOK(bool b)
         }
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка изменения \"логин-пароль\""), error);
+        trError.type = error.type;
+        trError.data = error.data;
+        reject();
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка изменения \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        reject();
     }
 }

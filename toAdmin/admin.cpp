@@ -85,7 +85,7 @@ commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), error);
+        messageBox.warning(this, tr("Ошибка при добавлении"), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
@@ -128,7 +128,7 @@ commit();
         else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при удалении"), error);
+        messageBox.warning(this, tr("Ошибка при удалении"), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
@@ -152,7 +152,7 @@ begin();
 commit();
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка прав доступа"), error);
+        messageBox.warning(this, tr("Ошибка прав доступа"), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));

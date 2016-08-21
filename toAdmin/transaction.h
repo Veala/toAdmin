@@ -3,28 +3,25 @@
 
 #include <QtSql>
 
-enum typeError{
-    BEGIN, ROLLBACKOK, ROLLBACKERR,
-
-    PROGRAMMERROR, OTHER
-};
-
-class trException
-{
-public:
-    explicit trException(typeError &tp, const QString &str);
-    typeError type;
-    QString data;
-};
-
 class Transaction
 {
 public:
     Transaction(QSqlDatabase &database);
-    ~Transaction();
-
+    enum typeError{
+        NO_ERR,
+        BEGIN_ERR, ROLLBACK_OK_ERR, ROLLBACK_CRITICAL_ERR,
+        PROGRAMM_ERR, OTHER_ERR
+    };
+    class trException
+    {
+    public:
+        explicit trException();
+        explicit trException(typeError tp, QString str);
+        typeError type;
+        QString data;
+        //bool operator
+    } trError;
     QSqlDatabase *db;
-    //QSqlQuery *qBegin, *qCommit, *qRollback;
     void begin();
     void commit();
     void rollback(QString);

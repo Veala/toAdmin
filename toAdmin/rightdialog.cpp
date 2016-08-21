@@ -38,10 +38,13 @@ void rightDialog::clickOK(bool b)
         }
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка добавления прав"), error);
+        trError.type = error.type;
+        trError.data = error.data;
+        reject();
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка добавления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        messageBox.warning(this, tr("Ошибка добавления"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        reject();
     }
 }
 

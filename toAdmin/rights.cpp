@@ -96,9 +96,13 @@ begin();
 
         rightDialog rDialog(0, list, uKey, *db);
         if (!rDialog.exec()) {
+            if (rDialog.trError.type == NO_ERR) {
 rollback(QString("standard situation"));
-            ui->statusbar->showMessage("Отмена добавления права", 5000);
-            return;
+                ui->statusbar->showMessage("Отмена добавления права", 5000);
+                return;
+            } else {
+                throw rDialog.trError;
+            }
         }
 
         QSqlRecord rec(tmRights->record());
@@ -119,7 +123,7 @@ commit();
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), error);
+        messageBox.warning(this, tr("Ошибка при добавлении"), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
@@ -154,13 +158,17 @@ begin();
 commit();
             ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
         } else {
+            if (lpdialog.trError.type == NO_ERR) {
 rollback(QString("standard situation"));
-            ui->statusbar->showMessage(tr("Отмена изменения логина и пароля"), 10000);
-            return;
+                ui->statusbar->showMessage("Отмена добавления права", 10000);
+                return;
+            } else {
+                throw lpdialog.trError;
+            }
         }
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error);
+        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
@@ -190,7 +198,7 @@ commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
     catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка удаления прав"), error);
+        messageBox.warning(this, tr("Ошибка удаления прав"), error.data);
     }
     catch (...) {
         messageBox.warning(this, tr("Ошибка удаления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
