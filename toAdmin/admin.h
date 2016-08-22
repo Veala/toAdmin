@@ -23,12 +23,14 @@ public:
     QSqlTableModel *tmUsers;
     Rights *rights;
     QMessageBox messageBox;
-
+signals:
+    void sError(QString);
 public slots:
     void sorting(int,Qt::SortOrder);
     void addUser();
     void delUser();
     void accessRights();
+    void error(const trException, QString);
 
 private:
     Ui::Admin *ui;

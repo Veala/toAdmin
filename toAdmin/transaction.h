@@ -10,7 +10,7 @@ public:
     enum typeError{
         NO_ERR,
         BEGIN_ERR, ROLLBACK_OK_ERR, ROLLBACK_CRITICAL_ERR,
-        PROGRAMM_ERR, OTHER_ERR
+        OTHER_ERR
     };
     class trException
     {

@@ -25,12 +25,15 @@ public:
     int uKey;
     QMessageBox messageBox;
 
+signals:
+    void sError(const trException, QString);
 public slots:
     void init(int uKey, QString uNmae);
     void sorting(int,Qt::SortOrder);
     void addRights();
     void logPas();
     void delRights();
+    void error(const trException, QString);
 
 private:
     Ui::Rights *ui;

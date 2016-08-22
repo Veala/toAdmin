@@ -6,6 +6,7 @@ rightDialog::rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Ke
     ui(new Ui::rightDialog)
 {
     ui->setupUi(this);
+    setFixedSize(size());
     this->setWindowIcon(QIcon(":/img/img.png"));
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
@@ -23,7 +24,7 @@ rightDialog::~rightDialog()
     delete ui;
 }
 
-void rightDialog::clickOK(bool b)
+void rightDialog::clickOK(bool)
 {
     try {
         QString login    = ui->lineEdit->text();

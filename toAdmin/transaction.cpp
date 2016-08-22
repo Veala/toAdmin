@@ -3,6 +3,7 @@
 Transaction::Transaction(QSqlDatabase &database)
 {
     db = &database;
+    //not locked tables and rows
     //tx_isolation | REPEATABLE-READ
 }
 

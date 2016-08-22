@@ -11,6 +11,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
 
     tmUsers = new QSqlTableModel(this,  *db);
     rights = new Rights(this,  *db);
+    connect(rights, SIGNAL(sError(trException,QString)), this, SLOT(error(trException,QString)));
 
     tmUsers->setEditStrategy(QSqlTableModel::OnFieldChange);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -21,6 +22,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
     tmUsers->setTable("tabusers");
 
     QHeaderView *horizontalHeader = new QHeaderView(Qt::Horizontal, ui->tableView);
+    horizontalHeader->setToolTip(tr("Сортировка(активация)"));
     ui->tableView->setHorizontalHeader(horizontalHeader);
     horizontalHeader->setSortIndicatorShown(true);
     horizontalHeader->setSectionsClickable(true);
@@ -84,11 +86,11 @@ begin();
 commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка при добавлении"));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка при добавлении"));
     }
 }
 
@@ -120,18 +122,17 @@ begin();
             lp.prevLpID = lpQuery.value(0).toInt();
             lp.delPrevLP();
         }
-        //-----------------------------------------------?????????????????????????----------------------------------------
-        bool b = tmUsers->removeRow(rowsList.at(0).row());
+
+        if(!tmUsers->removeRow(rowsList.at(0).row())) rollback(QString("tmUsers->removeRow: " + tmUsers->lastError().text()));
         if(!tmUsers->select()) rollback(QString("tmUsers->select() 2: " + tmUsers->lastError().text()));
 commit();
-        if(b)   ui->statusBar->showMessage(tr("Пользователь %1 удален").arg(family), 5000);
-        else    ui->statusBar->showMessage(tr("%1: права удалены, пользователь задействован в тестах или в сеансах испытаний").arg(family), 5000);
+        ui->statusBar->showMessage(tr("Пользователь %1 и его права удалены").arg(family), 5000);
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при удалении"), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка при удалении"));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка при удалении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка при удалении"));
     }
 }
 
@@ -151,10 +152,34 @@ begin();
         rights->init(uKey, uName);
 commit();
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка прав доступа"), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка прав доступа"));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка прав доступа"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка прав доступа"));
     }
+}
+
+void Admin::error(const trException err, QString name)
+{
+    switch (err.type) {
+    case BEGIN_ERR:
+        ui->statusBar->showMessage("Ошибка инициализации транзакции");
+        break;
+    case ROLLBACK_OK_ERR:
+        ui->statusBar->showMessage("Откат транзакции завершен успешно");
+        break;
+    case ROLLBACK_CRITICAL_ERR:
+        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
+        ui->statusBar->showMessage("Откат транзакции завершен неуспешно");
+        emit sError(err.data);
+        break;
+    case OTHER_ERR:
+        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
+        ui->statusBar->showMessage(err.data);
+        emit sError(err.data);
+        break;
+    }
+    if (sender()->objectName() == "Rights") return;
+    messageBox.warning(this, name, err.data + tr("\nПовторите попытку позже"));
 }

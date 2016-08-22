@@ -6,6 +6,7 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &da
     ui(new Ui::lpDialog)
 {
     ui->setupUi(this);
+    setFixedSize(size());
     this->setWindowIcon(QIcon(":/img/img.png"));
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
@@ -21,7 +22,7 @@ lpDialog::~lpDialog()
     delete ui;
 }
 
-void lpDialog::clickOK(bool b)
+void lpDialog::clickOK(bool)
 {
     try {
         QString login    = ui->lineEdit->text();

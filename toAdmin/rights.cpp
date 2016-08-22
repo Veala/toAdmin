@@ -6,6 +6,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &database) :
     ui(new Ui::Rights)
 {
     ui->setupUi(this);
+    setFixedWidth(width());
     this->setWindowIcon(QIcon(":/img/img.png"));
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
 
@@ -26,6 +27,7 @@ Rights::Rights(QWidget *parent, QSqlDatabase &database) :
     ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
 
     QHeaderView *horizontalHeader = new QHeaderView(Qt::Horizontal, ui->tableView);
+    horizontalHeader->setToolTip(tr("Сортировка(активация)"));
     ui->tableView->setHorizontalHeader(horizontalHeader);
     horizontalHeader->setSortIndicatorShown(true);
     horizontalHeader->setSectionsClickable(true);
@@ -122,11 +124,11 @@ rollback(QString("standard situation"));
 commit();
         ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка при добавлении"));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка при добавлении"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка при добавлении"));
     }
 }
 
@@ -167,11 +169,11 @@ rollback(QString("standard situation"));
             }
         }
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка \"логин-пароль\""));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка \"логин-пароль\""), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка \"логин-пароль\""));
     }
 }
 
@@ -197,10 +199,33 @@ begin();
 commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
     }
-    catch (const trException& error) {
-        messageBox.warning(this, tr("Ошибка удаления прав"), error.data);
+    catch (const trException& err) {
+        error(err, tr("Ошибка удаления прав"));
     }
     catch (...) {
-        messageBox.warning(this, tr("Ошибка удаления прав"), tr("Операция выполнена неуспешно, повторите попытку позже"));
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка удаления прав"));
     }
+}
+
+void Rights::error(const Transaction::trException err, QString name)
+{
+    switch (err.type) {
+    case BEGIN_ERR:
+        ui->statusbar->showMessage("Ошибка инициализации транзакции");
+        break;
+    case ROLLBACK_OK_ERR:
+        ui->statusbar->showMessage("Откат транзакции завершен успешно");
+        break;
+    case ROLLBACK_CRITICAL_ERR:
+        ui->addRightsAction->setEnabled(false); ui->logPasAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->statusbar->showMessage("Откат транзакции завершен неуспешно");
+        emit sError(err, name);
+        break;
+    case OTHER_ERR:
+        ui->addRightsAction->setEnabled(false); ui->logPasAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->statusbar->showMessage(err.data);
+        emit sError(err, name);
+        break;
+    }
+    messageBox.warning(this, name, err.data + tr("\nПовторите попытку позже"));
 }
