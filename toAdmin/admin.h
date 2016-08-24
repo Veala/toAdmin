@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef ADMIN_H
 #define ADMIN_H
 

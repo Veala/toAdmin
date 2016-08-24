@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #include "lpdialog.h"
 #include "ui_lpdialog.h"
 
@@ -9,12 +17,14 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &da
     setFixedSize(size());
     this->setWindowIcon(QIcon(":/img/img.png"));
     messageBox.setWindowIcon(QIcon(":/img/img.png"));
+    QRegExp rx("[0-9A-Fa-f]+");
+    Validator = new QRegExpValidator(rx,this);
+    ui->lineEdit->setValidator(Validator);
+    ui->lineEdit_2->setValidator(Validator);
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
-    currentL = curL;
-    currentP = curP;
-    ui->lineEdit->setText(currentL);
-    ui->lineEdit_2->setText(currentP);
+    currentL = curL; currentP = curP;
+    ui->lineEdit->setText(currentL); ui->lineEdit_2->setText(currentP);
 }
 
 lpDialog::~lpDialog()

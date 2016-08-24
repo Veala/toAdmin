@@ -1,7 +1,18 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef USERDIALOG_H
 #define USERDIALOG_H
 
 #include <QDialog>
+#include <QMessageBox>
+#include <QValidator>
+#include <QPushButton>
 
 namespace Ui {
 class userDialog;
@@ -17,6 +28,8 @@ public:
 
     QStringList data;
     int flat;
+    QMessageBox messageBox;
+    QRegExpValidator* Validator;
 
 public slots:
     void setData();

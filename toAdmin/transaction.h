@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 

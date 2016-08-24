@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef RIGHTDIALOG_H
 #define RIGHTDIALOG_H
 
@@ -22,6 +30,7 @@ public:
     QStringList data;
     int uKey, lpID;
     QMessageBox messageBox;
+    QRegExpValidator* Validator;
 
 public slots:
     void clickOK(bool);

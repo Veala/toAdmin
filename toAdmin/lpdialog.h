@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef LPDIALOG_H
 #define LPDIALOG_H
 
@@ -22,6 +30,7 @@ public:
     int uID, lpID, rID;
     QString currentL, currentP;
     QMessageBox messageBox;
+    QRegExpValidator* Validator;
 
 public slots:
     void clickOK(bool);

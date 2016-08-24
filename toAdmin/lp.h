@@ -1,3 +1,11 @@
+/****************************************************************************
+**
+** Developer: Igor Alaev
+** Contact: alaev@module.ru
+** Company: Research Center Module
+**
+****************************************************************************/
+
 #ifndef LP_H
 #define LP_H
 
@@ -25,6 +33,7 @@ public:
     int userId, lpID, prevLpID;
     QSqlQuery *table;
     QMap<QString, int> mType;
+    QStringList simpleLogins, simplePasswords;
 
     void init(QString);
     void setup();
