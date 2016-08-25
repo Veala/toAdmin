@@ -11,8 +11,8 @@
 Transaction::Transaction(QSqlDatabase &database)
 {
     db = &database;
-    //not locked tables and rows
-    //tx_isolation | REPEATABLE-READ
+    // tx_isolation | REPEATABLE-READ
+    // Tables not locked, but the updated and deleted rows is locked in transaction.
 }
 
 void Transaction::begin()
