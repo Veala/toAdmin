@@ -35,26 +35,25 @@ lpDialog::~lpDialog()
 void lpDialog::clickOK(bool)
 {
     try {
-        QString login    = ui->lineEdit->text();
-        QString password = ui->lineEdit_2->text();
-        LP lp(0, *db, login, password, uID);
-        lp.prevLpID = lpID;
+        QString login    = ui->lineEdit->text();    QString password = ui->lineEdit_2->text();
+        if (login.length() < 4)         { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Логин должен быть не менее 4 символов"));     return; }
+        if (password.length() < 6)      { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Пароль должен быть не менее 6 символов"));    return; }
+        QSqlQuery update(*db);
         if ((currentL == login) && (currentP == password)) {
-            accept(); return;
-        } else if ((currentL == login) && (currentP != password)) {
-            lp.init("changeLP_1();");
-        } else if (currentL != login) {
-            lp.init("changeLP_2();");
-        }
-        if (lp.error == "Ok") {
-            QSqlQuery update(*db);
-            if(!update.exec(QString("UPDATE tabaccessrights SET TabLoginPassword_idTabLoginPassword = %1 "
-                                    "WHERE idtabaccessrights = %2;").arg(QString::number(lp.lpID), QString::number(rID))))
-                rollback(QString("Update 1: " + update.lastError().text()));
-            lp.delPrevLP();
             accept();
-        } else {
-            messageBox.warning(this, tr("Смена логина и пароля"), tr("Ошибка: %1").arg(lp.error));
+        } else if ((currentL == login) && (currentP != password)) {
+            if(!update.exec(QString("UPDATE tabloginpassword SET password = \"%1\" "
+                                    "WHERE idTabLoginPassword = %2;").arg(password, QString::number(lpID))))
+                rollback(QString("Update 1: " + update.lastError().text()));
+            accept();
+        } else if (currentL != login) {
+            if(!update.exec(QString("SELECT * FROM tabloginpassword WHERE login = \"%1\";").arg(login)))
+                rollback(QString("SELECT lpDialog: " + update.lastError().text()));
+            if (update.size() >= 1) { messageBox.warning(this, tr("Ошибка добавления пользователя"), tr("Данный логин занят другим пользователем")); return; }
+            if(!update.exec(QString("UPDATE tabloginpassword SET login = \"%1\", password = \"%2\" "
+                                    "WHERE idTabLoginPassword = %3;").arg(login, password, QString::number(lpID))))
+                rollback(QString("Update 2: " + update.lastError().text()));
+            accept();
         }
     }
     catch (const trException& error) {

@@ -26,6 +26,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
     ui->tableView->addAction(ui->accessRightsAction);
+    ui->tableView->addAction(ui->logPasAction);
     this->addAction(ui->actionEsc);
     tmUsers->setTable("tabusers");
 
@@ -58,6 +59,7 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
 
     connect(ui->addUserAction, SIGNAL(triggered(bool)), this, SLOT(addUser()));
     connect(ui->accessRightsAction, SIGNAL(triggered(bool)), this, SLOT(accessRights()));
+    connect(ui->logPasAction, SIGNAL(triggered(bool)), this, SLOT(logPas()));
     connect(ui->delUserAction, SIGNAL(triggered(bool)), this, SLOT(delUser()));
     connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
@@ -78,12 +80,17 @@ void Admin::sorting(int column, Qt::SortOrder sortOrder)
 void Admin::addUser()
 {
     try {
-        userDialog uDialog;
-        if (!uDialog.exec()) {
-            ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
-            return;
-        }
 begin();
+        userDialog uDialog(0, *db);
+        if (!uDialog.exec()) {
+            if (uDialog.trError.type == NO_ERR) {
+rollback(QString("standard situation"));
+                ui->statusBar->showMessage("Отмена добавления пользователя", 5000);
+                return;
+            } else {
+                throw uDialog.trError;
+            }
+        }
         QSqlRecord rec(tmUsers->record());
         //rec.setValue(0, lastKeyUser+1);
         for (int i=1; i<rec.count() - 1; i++)
@@ -112,7 +119,10 @@ void Admin::delUser()
         }
         QString family = rowsList.at(0).data().toString();
         int uKey = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
-        if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) return;
+        if (QMessageBox::No == messageBox.question(this, tr("Удаление пользователя"), tr("Права доступа связанные с пользователем %1 так же будут удалены. Продолжить удаление?").arg(family), QMessageBox::Yes, QMessageBox::No)) {
+            ui->statusBar->showMessage(tr("Отмена удаления пользователя"), 5000);
+            return;
+        }
 begin();
         QSqlQuery lpQuery(*db);
         if (!lpQuery.exec("SELECT DISTINCT TabLoginpassword_idtabloginpassword FROM tabaccessrights WHERE TabUsers_idTabUsers = " + QString::number(uKey) + ";")) {
@@ -124,11 +134,9 @@ begin();
             ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
             rollback(QString("Select 2u: " + delQuery.lastError().text()));
         }
-
-        LP lp(0, *db, "", "", 0);
-        while (lpQuery.next()) {
-            lp.prevLpID = lpQuery.value(0).toInt();
-            lp.delPrevLP();
+        if (!delQuery.exec("DELETE FROM tabloginpassword WHERE idTabLoginPassword = " + QString::number(uKey) + ";")) {
+            ui->statusBar->showMessage("Ошибка при удалении: " + delQuery.lastError().text());
+            rollback(QString("Select 3u: " + delQuery.lastError().text()));
         }
 
         if(!tmUsers->removeRow(rowsList.at(0).row())) rollback(QString("tmUsers->removeRow: " + tmUsers->lastError().text()));
@@ -168,6 +176,48 @@ commit();
     }
 }
 
+void Admin::logPas()
+{
+    try {
+        QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows();
+        if (rowsList.count() == 0) {
+            messageBox.warning(this, tr("Логин-пароль"), tr("В таблице нет выделенного поля"));
+            return;
+        }
+        int uID = rowsList.at(0).data().toInt();
+        //qDebug() << "uID:" << uID;
+        QString surname = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString();
+begin();
+        QSqlQuery qlp(*db);
+        if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(uID))))
+            rollback(QString("Select logPas 1: " + qlp.lastError().text()));
+        qlp.next();
+
+        lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), *db);
+        lpdialog.setWindowTitle(surname);
+        lpdialog.lpID = uID;
+
+        if (lpdialog.exec()) {
+commit();
+            ui->statusBar->showMessage(tr("Изменения логина и пароля завершены успешно"), 10000);
+        } else {
+            if (lpdialog.trError.type == NO_ERR) {
+rollback(QString("standard situation"));
+                ui->statusBar->showMessage("Отмена редактирования логина и пароля", 10000);
+                return;
+            } else {
+                throw lpdialog.trError;
+            }
+        }
+    }
+    catch (const trException& err) {
+        error(err, tr("Ошибка \"логин-пароль\""));
+    }
+    catch (...) {
+        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка \"логин-пароль\""));
+    }
+}
+
 void Admin::error(const trException err, QString name)
 {
     switch (err.type) {
@@ -178,12 +228,14 @@ void Admin::error(const trException err, QString name)
         ui->statusBar->showMessage("Откат транзакции завершен успешно");
         break;
     case ROLLBACK_CRITICAL_ERR:
-        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
+        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false);
+        ui->delUserAction->setEnabled(false); ui->logPasAction->setEnabled(false);
         ui->statusBar->showMessage("Откат транзакции завершен неуспешно");
         emit sError(err.data);
         break;
     case OTHER_ERR:
-        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
+        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false);
+        ui->delUserAction->setEnabled(false); ui->logPasAction->setEnabled(false);
         ui->statusBar->showMessage(err.data);
         emit sError(err.data);
         break;

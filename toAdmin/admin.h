@@ -10,11 +10,9 @@
 #define ADMIN_H
 
 #include <QMainWindow>
-#include <QtSql>
-#include <QMessageBox>
 #include "rights.h"
 #include "userdialog.h"
-#include "lp.h"
+#include "lpdialog.h"
 
 namespace Ui {
 class Admin;
@@ -23,6 +21,8 @@ class Admin;
 class Admin : public QMainWindow, public Transaction
 {
     Q_OBJECT
+
+    //********  USER KEY == LOGON_PASSWORD KEY  ********//
 
 public:
     explicit Admin(QWidget *parent, QSqlDatabase &database);
@@ -38,6 +38,7 @@ public slots:
     void addUser();
     void delUser();
     void accessRights();
+    void logPas();
     void error(const trException, QString);
 
 private:

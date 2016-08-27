@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>224</width>
-    <height>253</height>
+    <width>234</width>
+    <height>305</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -119,6 +119,30 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Логин:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_10">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Пароль:</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -150,6 +174,12 @@
           <number>32767</number>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_8"/>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit_9"/>
        </item>
       </layout>
      </item>

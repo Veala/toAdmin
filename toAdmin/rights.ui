@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>519</width>
+    <width>368</width>
     <height>527</height>
    </rect>
   </property>
@@ -44,7 +44,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>519</width>
+     <width>368</width>
      <height>21</height>
     </rect>
    </property>
@@ -72,14 +72,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
-   </property>
-  </action>
-  <action name="logPasAction">
-   <property name="text">
-    <string>Логин-пароль</string>
-   </property>
-   <property name="toolTip">
-    <string>Логин пароль</string>
    </property>
   </action>
   <action name="actionEsc">

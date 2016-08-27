@@ -84,6 +84,14 @@
     <string>Esc</string>
    </property>
   </action>
+  <action name="logPasAction">
+   <property name="text">
+    <string>Редактировать логин-пароль</string>
+   </property>
+   <property name="toolTip">
+    <string>Редактировать логин - праоль</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -10,31 +10,24 @@
 #define RIGHTDIALOG_H
 
 #include <QDialog>
-#include <QtSql>
 #include <QPushButton>
-#include <QMessageBox>
-#include "lp.h"
 
 namespace Ui {
 class rightDialog;
 }
 
-class rightDialog : public QDialog, public Transaction
+class rightDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit rightDialog(QWidget *parent, QVector<QStringList> &strLists, int Key, QSqlDatabase &database);
+    explicit rightDialog(QWidget *parent, QVector<QStringList> &strLists);
     ~rightDialog();
 
     QStringList data;
-    int uKey, lpID;
-    QMessageBox messageBox;
-    QRegExpValidator* Validator;
 
 public slots:
-    void clickOK(bool);
-    void setData();
+    void setData(bool);
 
 private:
     Ui::rightDialog *ui;

@@ -10,12 +10,10 @@
 #define RIGHTS_H
 
 #include <QMainWindow>
-#include <QtSql>
 #include <QTableView>
 #include <QMessageBox>
 #include "rightdialog.h"
-#include "lp.h"
-#include "lpdialog.h"
+#include "transaction.h"
 
 namespace Ui {
 class Rights;
@@ -39,7 +37,6 @@ public slots:
     void init(int uKey, QString uNmae);
     void sorting(int,Qt::SortOrder);
     void addRights();
-    void logPas();
     void delRights();
     void error(const trException, QString);
 

@@ -13,23 +13,24 @@
 #include <QMessageBox>
 #include <QValidator>
 #include <QPushButton>
+#include "transaction.h"
 
 namespace Ui {
 class userDialog;
 }
 
-class userDialog : public QDialog
+class userDialog : public QDialog, public Transaction
 {
     Q_OBJECT
 
 public:
-    explicit userDialog(QWidget *parent = 0);
+    explicit userDialog(QWidget *parent, QSqlDatabase &database);
     ~userDialog();
 
     QStringList data;
     int flat;
     QMessageBox messageBox;
-    QRegExpValidator* Validator;
+    QRegExpValidator* uValidator, *lpValidator;
 
 public slots:
     void setData();

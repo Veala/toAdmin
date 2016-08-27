@@ -10,10 +10,9 @@
 #define LPDIALOG_H
 
 #include <QDialog>
-#include <QtSql>
 #include <QPushButton>
 #include <QMessageBox>
-#include "lp.h"
+#include "transaction.h"
 
 namespace Ui {
 class lpDialog;
@@ -27,7 +26,7 @@ public:
     explicit lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &database);
     ~lpDialog();
 
-    int uID, lpID, rID;
+    int lpID;
     QString currentL, currentP;
     QMessageBox messageBox;
     QRegExpValidator* Validator;

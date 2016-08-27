@@ -25,7 +25,6 @@ Rights::Rights(QWidget *parent, QSqlDatabase &database) :
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableView->setContextMenuPolicy(Qt::ActionsContextMenu);
-    ui->tableView->addAction(ui->logPasAction);
     this->addAction(ui->actionEsc);
     tmRights->setTable("tabaccessrights");
 
@@ -56,7 +55,6 @@ Rights::Rights(QWidget *parent, QSqlDatabase &database) :
 
     connect(ui->addRightsAction, SIGNAL(triggered(bool)), this, SLOT(addRights()));
     connect(ui->delRightsAction, SIGNAL(triggered(bool)), this, SLOT(delRights()));
-    connect(ui->logPasAction, SIGNAL(triggered(bool)), this, SLOT(logPas()));
     connect(ui->actionEsc, SIGNAL(triggered(bool)), this, SLOT(close()));
 
     //---------------------------------------status bar---------------------------
@@ -74,7 +72,7 @@ void Rights::init(int Key, QString uName)
     uKey = Key;
     tmRights->setFilter("TabUsers_idTabUsers = " + QString::number(uKey));
     if(!tmRights->select()) rollback(QString("tmRights->select() 1: " + tmRights->lastError().text())); //верно - throw уходит дальше
-    setWindowTitle(tr("Права доступа пользователя: ") + uName);
+    setWindowTitle(uName);
     show();
 }
 
@@ -104,15 +102,11 @@ begin();
         QVector<QStringList> list;
         list.append(nameTestKinds); list.append(nameTypeProducts); list.append(nameAuthorityKinds);
 
-        rightDialog rDialog(0, list, uKey, *db);
+        rightDialog rDialog(0, list);
         if (!rDialog.exec()) {
-            if (rDialog.trError.type == NO_ERR) {
 rollback(QString("standard situation"));
-                ui->statusbar->showMessage("Отмена добавления права", 5000);
-                return;
-            } else {
-                throw rDialog.trError;
-            }
+            ui->statusbar->showMessage("Отмена добавления права", 5000);
+            return;
         }
 
         QSqlRecord rec(tmRights->record());
@@ -121,67 +115,22 @@ rollback(QString("standard situation"));
         //    qDebug() << idAuthorityKinds.at(rDialog.data.at(4).toInt());
 
         //    rec.setValue(0, lastKeyAccessRights+1);
-        rec.setValue(1, rDialog.lpID);
-        rec.setValue(2, idTestKinds.at(rDialog.data.at(2).toInt()));
-        rec.setValue(3, idTypeProducts.at(rDialog.data.at(3).toInt()));
+        rec.setValue(1, uKey);
+        rec.setValue(2, idTestKinds.at(rDialog.data.at(0).toInt()));
+        rec.setValue(3, idTypeProducts.at(rDialog.data.at(1).toInt()));
         rec.setValue(4, uKey);
-        rec.setValue(5, idAuthorityKinds.at(rDialog.data.at(4).toInt()));
+        rec.setValue(5, idAuthorityKinds.at(rDialog.data.at(2).toInt()));
 
         if(!tmRights->insertRecord(-1,rec)) rollback(QString("Insert 0: tmRights->insertRecord(-1,rec)"));
         if(!tmRights->select()) rollback(QString("tmRights->select() 1: " + tmRights->lastError().text()));
 commit();
-        ui->statusbar->showMessage(tr("Добавлено право пользователя"), 10000);
+        ui->statusbar->showMessage(tr("Добавлено право доступа"), 10000);
     }
     catch (const trException& err) {
         error(err, tr("Ошибка при добавлении"));
     }
     catch (...) {
         error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка при добавлении"));
-    }
-}
-
-void Rights::logPas()
-{
-    try {
-        QModelIndexList rowsList = ui->tableView->selectionModel()->selectedRows(1);
-        if (rowsList.count() == 0) {
-            messageBox.warning(this, tr("Логин-пароль"), tr("В таблице нет выделенного поля"));
-            return;
-        }
-        int lpKey = rowsList.at(0).data().toInt();
-        //qDebug() << "lpKey:" << lpKey;
-        QString numStr = "Строка №" + QString::number(rowsList.at(0).row() + 1);
-begin();
-        QSqlQuery qlp(*db);
-        if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(lpKey))))
-            rollback(QString("Select logPas 1: " + qlp.lastError().text()));
-        qlp.next();
-
-        lpDialog lpdialog(0, qlp.value(1).toString(), qlp.value(2).toString(), *db);
-        lpdialog.setWindowTitle(numStr);
-        lpdialog.lpID = lpKey;
-        lpdialog.uID = ui->tableView->selectionModel()->selectedRows(4).at(0).data().toInt();
-        lpdialog.rID = ui->tableView->selectionModel()->selectedRows(0).at(0).data().toInt();
-
-        if (lpdialog.exec()) {
-            if(!tmRights->select()) rollback(QString("Select logPas 2: " + tmRights->lastError().text()));
-commit();
-            ui->statusbar->showMessage(tr("Изменения завершены успешно"), 10000);
-        } else {
-            if (lpdialog.trError.type == NO_ERR) {
-rollback(QString("standard situation"));
-                ui->statusbar->showMessage("Отмена добавления права", 10000);
-                return;
-            } else {
-                throw lpdialog.trError;
-            }
-        }
-    }
-    catch (const trException& err) {
-        error(err, tr("Ошибка \"логин-пароль\""));
-    }
-    catch (...) {
-        error(trException(OTHER_ERR, tr("Неизвестная ошибка")), tr("Ошибка \"логин-пароль\""));
     }
 }
 
@@ -193,16 +142,13 @@ void Rights::delRights()
             messageBox.warning(this, tr("Удаление права доступа"), tr("В таблице нет выделенного права доступа"));
             return;
         }
-        if (QMessageBox::No == messageBox.question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) return;
+        if (QMessageBox::No == messageBox.question(this, tr("Удаление права доступа"), tr("Право доступа будет удалено. Продолжить удаление?"), QMessageBox::Yes, QMessageBox::No)) {
+            ui->statusbar->showMessage(tr("Отмена удаления права"), 5000);
+            return;
+        }
 
-        int lpID = rowsList.at(0).data().toInt();
 begin();
         if (!tmRights->removeRow(rowsList.at(0).row())) rollback(QString("Error: tmRights->removeRow(rowsList.at(0).row()): " + tmRights->lastError().text()));
-
-        LP lp(0, *db, "", "", 0);
-        lp.prevLpID = lpID;
-        lp.delPrevLP();
-
         if (!tmRights->select()) rollback(QString("Error: Select logPas 3: " + tmRights->lastError().text()));
 commit();
         ui->statusbar->showMessage(tr("Право доступа удалено"), 5000);
@@ -225,12 +171,12 @@ void Rights::error(const Transaction::trException err, QString name)
         ui->statusbar->showMessage("Откат транзакции завершен успешно");
         break;
     case ROLLBACK_CRITICAL_ERR:
-        ui->addRightsAction->setEnabled(false); ui->logPasAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->addRightsAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
         ui->statusbar->showMessage("Откат транзакции завершен неуспешно");
         emit sError(err, name);
         break;
     case OTHER_ERR:
-        ui->addRightsAction->setEnabled(false); ui->logPasAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->addRightsAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
         ui->statusbar->showMessage(err.data);
         emit sError(err, name);
         break;
