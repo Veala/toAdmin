@@ -42,6 +42,7 @@ void userDialog::setData()
     try {
         if (ui->lineEdit_8->text().length() < 4)    { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Логин должен быть не менее 4 символов"));     return; }
         if (ui->lineEdit_9->text().length() < 6)    { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Пароль должен быть не менее 6 символов"));    return; }
+        if (ui->lineEdit_9->text() != ui->lineEdit_10->text())    { messageBox.warning(this,tr("Ошибка паролей"),tr("Ошибка в подтверждении пароля, введите пароли заново"));     return; }
         if ((ui->lineEdit->text().length() < 3)   ||
             (ui->lineEdit_2->text().length() < 3) ||
             (ui->lineEdit_2->text().length() < 3))

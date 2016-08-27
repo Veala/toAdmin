@@ -24,7 +24,7 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &da
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
     currentL = curL; currentP = curP;
-    ui->lineEdit->setText(currentL); ui->lineEdit_2->setText(currentP);
+    ui->lineEdit->setText(currentL); ui->lineEdit_2->setText(currentP); ui->lineEdit_3->setText(currentP);
 }
 
 lpDialog::~lpDialog()
@@ -38,6 +38,7 @@ void lpDialog::clickOK(bool)
         QString login    = ui->lineEdit->text();    QString password = ui->lineEdit_2->text();
         if (login.length() < 4)         { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Логин должен быть не менее 4 символов"));     return; }
         if (password.length() < 6)      { messageBox.warning(this,tr("Синтаксическия ошибка"),tr("Пароль должен быть не менее 6 символов"));    return; }
+        if (password != ui->lineEdit_3->text())    { messageBox.warning(this,tr("Ошибка паролей"),tr("Ошибка в подтверждении пароля, введите пароли заново"));     return; }
         QSqlQuery update(*db);
         if ((currentL == login) && (currentP == password)) {
             accept();

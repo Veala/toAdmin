@@ -86,7 +86,7 @@
   </action>
   <action name="logPasAction">
    <property name="text">
-    <string>Редактировать логин-пароль</string>
+    <string>Редактировать логин и пароль</string>
    </property>
    <property name="toolTip">
     <string>Редактировать логин - праоль</string>
