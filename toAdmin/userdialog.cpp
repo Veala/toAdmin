@@ -45,7 +45,7 @@ void userDialog::setData()
         if (ui->lineEdit_9->text() != ui->lineEdit_10->text())    { messageBox.warning(this,tr("Ошибка паролей"),tr("Ошибка в подтверждении пароля, введите пароли заново"));     return; }
         if ((ui->lineEdit->text().length() < 3)   ||
             (ui->lineEdit_2->text().length() < 3) ||
-            (ui->lineEdit_2->text().length() < 3))
+            (ui->lineEdit_3->text().length() < 3))
         {
             if (QMessageBox::No == messageBox.information(this,tr("Синтаксическая неточность"),tr("Фамилия, имя, отчество: в поле(-ях) менее 3-х символов. Продолжить?"),QMessageBox::Yes,QMessageBox::No))
                 return;
