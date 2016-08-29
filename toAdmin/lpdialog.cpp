@@ -21,6 +21,7 @@ lpDialog::lpDialog(QWidget *parent, QString curL, QString curP, QSqlDatabase &da
     Validator = new QRegExpValidator(rx,this);
     ui->lineEdit->setValidator(Validator);
     ui->lineEdit_2->setValidator(Validator);
+    ui->lineEdit_3->setValidator(Validator);
     connect(ui->pushButton_Ok,SIGNAL(clicked(bool)),this,SLOT(clickOK(bool)));
     connect(ui->pushButton_Close,SIGNAL(clicked(bool)),this,SLOT(reject()));
     currentL = curL; currentP = curP;

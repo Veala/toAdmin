@@ -28,6 +28,7 @@ userDialog::userDialog(QWidget *parent, QSqlDatabase &database) :
     ui->lineEdit_3->setValidator(uValidator);
     ui->lineEdit_8->setValidator(lpValidator);
     ui->lineEdit_9->setValidator(lpValidator);
+    ui->lineEdit_10->setValidator(lpValidator);
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(setData()));
 }
