@@ -98,8 +98,12 @@ rollback(QString("standard situation"));
         rec.setValue(8, uDialog.flat);
         if(!tmUsers->insertRecord(-1,rec)) rollback(QString("tmUsers->insertRecord(-1,rec): " + tmUsers->lastError().text()));
         if(!tmUsers->select()) rollback(QString("tmUsers->select() 1: " + tmUsers->lastError().text()));
+
+        int lastUID = tmUsers->query().lastInsertId().toInt();
+        for (int i=0; i<tmUsers->rowCount(); i++)   if (tmUsers->index(i,0).data().toInt() == lastUID) { ui->tableView->selectRow(i); break; }
 commit();
         ui->statusBar->showMessage(tr("Добавлен новый пользователь"), 10000);
+        accessRights();
     }
     catch (const trException& err) {
         error(err, tr("Ошибка при добавлении"));

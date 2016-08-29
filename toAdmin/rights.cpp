@@ -123,6 +123,10 @@ rollback(QString("standard situation"));
 
         if(!tmRights->insertRecord(-1,rec)) rollback(QString("Insert 0: tmRights->insertRecord(-1,rec)"));
         if(!tmRights->select()) rollback(QString("tmRights->select() 1: " + tmRights->lastError().text()));
+
+        int lastUID = tmRights->query().lastInsertId().toInt();
+        for (int i=0; i<tmRights->rowCount(); i++)   if (tmRights->index(i,0).data().toInt() == lastUID) { ui->tableView->selectRow(i); break; }
+
 commit();
         ui->statusbar->showMessage(tr("Добавлено право доступа"), 10000);
     }
