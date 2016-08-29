@@ -49,10 +49,6 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
     tmUsers->setHeaderData(8, Qt::Horizontal, tr("Комната"));
 
     tmUsers->setSort(1, Qt::AscendingOrder);
-    if (!tmUsers->select()) {
-        messageBox.warning(this, tr("Ошибка инициализации"), tmUsers->lastError().text());
-        ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false); ui->delUserAction->setEnabled(false);
-    }
 
     ui->tableView->setModel(tmUsers);
     ui->tableView->setColumnHidden(0,true);
@@ -70,6 +66,19 @@ Admin::Admin(QWidget *parent, QSqlDatabase &database) :
 Admin::~Admin()
 {
     delete ui;
+}
+
+void Admin::init()
+{
+    if (!tmUsers->select()) {
+        error(trException(OTHER_ERR, tmUsers->lastError().text()), tr("Ошибка инициализации"));
+        return;
+    } else {
+        ui->addUserAction->setEnabled(true); ui->accessRightsAction->setEnabled(true);
+        ui->delUserAction->setEnabled(true); ui->logPasAction->setEnabled(true);
+        ui->tableView->setEnabled(true);
+    }
+    show();
 }
 
 void Admin::sorting(int column, Qt::SortOrder sortOrder)
@@ -234,12 +243,14 @@ void Admin::error(const trException err, QString name)
     case ROLLBACK_CRITICAL_ERR:
         ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false);
         ui->delUserAction->setEnabled(false); ui->logPasAction->setEnabled(false);
+        ui->tableView->setEnabled(false);
         ui->statusBar->showMessage("Откат транзакции завершен неуспешно");
         emit sError(err.data);
         break;
     case OTHER_ERR:
         ui->addUserAction->setEnabled(false); ui->accessRightsAction->setEnabled(false);
         ui->delUserAction->setEnabled(false); ui->logPasAction->setEnabled(false);
+        ui->tableView->setEnabled(false);
         ui->statusBar->showMessage(err.data);
         emit sError(err.data);
         break;

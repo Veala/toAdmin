@@ -176,11 +176,13 @@ void Rights::error(const Transaction::trException err, QString name)
         break;
     case ROLLBACK_CRITICAL_ERR:
         ui->addRightsAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->tableView->setEnabled(false);
         ui->statusbar->showMessage("Откат транзакции завершен неуспешно");
         emit sError(err, name);
         break;
     case OTHER_ERR:
         ui->addRightsAction->setEnabled(false); ui->delRightsAction->setEnabled(false);
+        ui->tableView->setEnabled(false);
         ui->statusbar->showMessage(err.data);
         emit sError(err, name);
         break;

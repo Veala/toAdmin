@@ -31,6 +31,7 @@ public:
     QSqlTableModel *tmUsers;
     Rights *rights;
     QMessageBox messageBox;
+    void init();
 signals:
     void sError(QString);
 public slots:
