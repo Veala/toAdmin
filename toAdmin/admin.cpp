@@ -70,15 +70,8 @@ Admin::~Admin()
 
 void Admin::init()
 {
-    if (!tmUsers->select()) {
-        error(trException(OTHER_ERR, tmUsers->lastError().text()), tr("Ошибка инициализации"));
-        return;
-    } else {
-        ui->addUserAction->setEnabled(true); ui->accessRightsAction->setEnabled(true);
-        ui->delUserAction->setEnabled(true); ui->logPasAction->setEnabled(true);
-        ui->tableView->setEnabled(true);
-    }
-    show();
+    if (!tmUsers->select()) { show(); error(trException(OTHER_ERR, tmUsers->lastError().text()), tr("Ошибка инициализации")); }
+    else show();
 }
 
 void Admin::sorting(int column, Qt::SortOrder sortOrder)
@@ -255,6 +248,6 @@ void Admin::error(const trException err, QString name)
         emit sError(err.data);
         break;
     }
-    if (sender()->objectName() == "Rights") return;
+    if ((sender()!=NULL) && (sender()->objectName()=="Rights")) return;
     messageBox.warning(this, name, err.data + tr("\nПовторите попытку позже"));
 }
