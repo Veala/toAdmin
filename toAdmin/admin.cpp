@@ -68,8 +68,9 @@ Admin::~Admin()
     delete ui;
 }
 
-void Admin::init()
+void Admin::showAdmin()
 {
+    //1.select() 2.show() 3.error()
     if (!tmUsers->select()) { show(); error(trException(OTHER_ERR, tmUsers->lastError().text()), tr("Ошибка инициализации")); }
     else show();
 }

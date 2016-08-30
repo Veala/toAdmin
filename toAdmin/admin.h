@@ -22,7 +22,7 @@ class Admin : public QMainWindow, public Transaction
 {
     Q_OBJECT
 
-    //********  USER KEY == LOGON_PASSWORD KEY  ********//
+    //********  USER KEY == LOGIN_PASSWORD KEY  ********//
 
 public:
     explicit Admin(QWidget *parent, QSqlDatabase &database);
@@ -31,10 +31,11 @@ public:
     QSqlTableModel *tmUsers;
     Rights *rights;
     QMessageBox messageBox;
-    void init();
 signals:
     void sError(QString);
 public slots:
+    void showAdmin();
+    //void showAdmin(QSqlDatabase &database);
     void sorting(int,Qt::SortOrder);
     void addUser();
     void delUser();

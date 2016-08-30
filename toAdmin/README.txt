@@ -6,7 +6,8 @@
 
 Note:
 Admin admin(0,db);
-admin.show();
+connect(&admin, SIGNAL(sError(QString)),....);
+admin.showAdmin();
 где db - база данных.
 
 ¬ случае критических ошибок, св€занных с запросами к базе данных, объект admin делает неактивными основные пункты таблиц и посылает сигнал sError(QString) с текстом ошибок.
