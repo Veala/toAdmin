@@ -31,11 +31,10 @@ public:
     QSqlTableModel *tmUsers;
     Rights *rights;
     QMessageBox messageBox;
+    void showAdmin();
 signals:
     void sError(QString);
 public slots:
-    void showAdmin();
-    //void showAdmin(QSqlDatabase &database);
     void sorting(int,Qt::SortOrder);
     void addUser();
     void delUser();
