@@ -193,7 +193,7 @@ void Admin::logPas()
         }
         int uID = rowsList.at(0).data().toInt();
         //qDebug() << "uID:" << uID;
-        QString surname = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString();
+        QString surname = ui->tableView->selectionModel()->selectedRows(1).at(0).data().toString() + " " + ui->tableView->selectionModel()->selectedRows(2).at(0).data().toString();
 begin();
         QSqlQuery qlp(*db);
         if(!qlp.exec(QString("SELECT * FROM tabloginpassword WHERE idTabLoginPassword = %1;").arg(QString::number(uID))))
